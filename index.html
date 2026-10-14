@@ -1,0 +1,2114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Deliverability & Inbox Pulse | Real-Time Monitor</title>
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* Reset & Base Variables */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --border-color: #e2e8f0;
+      --border-focus: #6366f1;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      
+      --indigo-50: #eef2ff;
+      --indigo-100: #e0e7ff;
+      --indigo-200: #c7d2fe;
+      --indigo-600: #4f46e5;
+      --indigo-700: #4338ca;
+      
+      --emerald-50: #ecfdf5;
+      --emerald-100: #d1fae5;
+      --emerald-200: #a7f3d0;
+      --emerald-500: #10b981;
+      --emerald-600: #059669;
+      --emerald-700: #047857;
+
+      --rose-50: #fff1f2;
+      --rose-100: #ffe4e6;
+      --rose-200: #fecdd3;
+      --rose-500: #f43f5e;
+      --rose-600: #e11d48;
+      --rose-700: #be123c;
+
+      --amber-50: #fffbeb;
+      --amber-100: #fef3c7;
+      --amber-200: #fde68a;
+      --amber-500: #f59e0b;
+      --amber-700: #b45309;
+
+      --violet-50: #f5f3ff;
+      --violet-100: #ede9fe;
+      --violet-600: #7c3aed;
+      --violet-700: #6d28d9;
+
+      --sky-50: #f0f9ff;
+      --sky-100: #e0f2fe;
+      --sky-500: #0ea5e9;
+
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    code, pre, .font-mono {
+      font-family: var(--font-mono);
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f8fafc; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Layout Containers */
+    .container {
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    /* Interactive Donut SVG */
+    .donut-segment {
+      transition: stroke-dasharray 0.4s cubic-bezier(0.4, 0, 0.2, 1), stroke-width 0.2s ease, opacity 0.2s ease;
+      cursor: pointer;
+    }
+    .donut-segment:hover {
+      stroke-width: 26;
+      opacity: 0.9;
+    }
+
+    /* Background Animation Canvas */
+    #ambient-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Header */
+    header {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      padding: 0.75rem 0;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.75rem;
+      background: linear-gradient(135deg, var(--indigo-600), var(--violet-600));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      line-height: 1.2;
+    }
+
+    .badge-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      margin-top: 0.2rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 0.375rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .badge-indigo { background: var(--indigo-50); color: var(--indigo-700); border-color: var(--indigo-200); }
+    .badge-emerald { background: var(--emerald-50); color: var(--emerald-700); border-color: var(--emerald-200); }
+    .badge-amber { background: var(--amber-50); color: var(--amber-700); border-color: var(--amber-200); }
+    .badge-sky { background: var(--sky-50); color: #0369a1; border-color: #bae6fd; }
+    .badge-rose { background: var(--rose-50); color: var(--rose-700); border-color: var(--rose-200); }
+    .badge-slate { background: #f1f5f9; color: var(--text-muted); border-color: var(--border-color); }
+
+    /* Controls Bar */
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease-in-out;
+      border: 1px solid var(--border-color);
+      background: #ffffff;
+      color: var(--text-main);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      user-select: none;
+    }
+    .btn:hover { background: #f8fafc; }
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary {
+      background: var(--indigo-600);
+      color: #ffffff;
+      border-color: var(--indigo-600);
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+    }
+    .btn-primary:hover { background: var(--indigo-700); border-color: var(--indigo-700); }
+
+    .btn-violet {
+      background: var(--violet-50);
+      color: var(--violet-700);
+      border-color: var(--violet-100);
+    }
+    .btn-violet:hover { background: var(--violet-100); }
+
+    .btn-amber {
+      background: var(--amber-50);
+      color: var(--amber-700);
+      border-color: var(--amber-200);
+    }
+    .btn-amber:hover { background: var(--amber-100); }
+
+    /* Navigation Bar */
+    .nav-bar {
+      background: rgba(255, 255, 255, 0.85);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 5rem;
+      z-index: 30;
+      backdrop-filter: blur(8px);
+    }
+
+    .tab-list {
+      display: flex;
+      gap: 0.25rem;
+      overflow-x: auto;
+      padding: 0.25rem 0;
+    }
+
+    .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0.85rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      color: var(--indigo-600);
+      border-bottom-color: var(--indigo-600);
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+
+    .kpi-card {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      padding: 1rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      transition: box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+
+    .kpi-header {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .kpi-value-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin: 0.4rem 0;
+    }
+    .kpi-value {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text-main);
+    }
+    .progress-bar-bg {
+      width: 100%;
+      height: 4px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      overflow: hidden;
+      margin-top: 0.35rem;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.5s ease;
+    }
+
+    /* 3 Column Desktop Layout */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr 300px;
+      gap: 1.25rem;
+      align-items: start;
+      position: relative;
+      z-index: 10;
+      margin-bottom: 3rem;
+    }
+
+    @media (max-width: 1200px) {
+      .dashboard-layout {
+        grid-template-columns: 260px 1fr;
+      }
+      .right-column {
+        grid-column: span 2;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .dashboard-layout {
+        grid-template-columns: 1fr;
+      }
+      .right-column {
+        grid-column: span 1;
+      }
+      .nav-bar { top: 0; }
+    }
+
+    /* Panel Card */
+    .panel-card {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+      overflow: hidden;
+    }
+
+    /* Form Inputs */
+    .input-text, .select-input {
+      width: 100%;
+      height: 2.25rem;
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 0.625rem;
+      padding: 0 0.75rem;
+      font-size: 0.75rem;
+      font-family: inherit;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .input-text:focus, .select-input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+      background: #ffffff;
+    }
+
+    /* Domain Units Card Layout */
+    .domain-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 0.875rem;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      overflow: hidden;
+    }
+    .domain-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+    }
+    .domain-card.has-spam {
+      border-color: var(--rose-200);
+      box-shadow: 0 2px 6px rgba(244, 63, 94, 0.08);
+    }
+    .domain-card-header {
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .domain-subgrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: #f8fafc;
+      border-top: 1px solid var(--border-color);
+    }
+    .account-pill {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      padding: 0.4rem 0.6rem;
+      border-radius: 0.5rem;
+      font-size: 0.7rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .account-pill.inbox { border-color: var(--emerald-200); background: var(--emerald-50); }
+    .account-pill.spam { border-color: var(--rose-200); background: var(--rose-50); }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-box {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      max-width: 480px;
+      width: 100%;
+      padding: 1.25rem;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+      transform: scale(0.95);
+      transition: transform 0.2s ease;
+    }
+    .modal-overlay.active .modal-box { transform: scale(1); }
+
+    /* Terminal Logging Pane */
+    .terminal-body {
+      background: #020617;
+      color: #e2e8f0;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 1rem;
+      height: 380px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 0.35rem;
+    }
+    .log-row {
+      display: flex;
+      gap: 0.5rem;
+      line-height: 1.4;
+      word-break: break-all;
+    }
+
+    /* Toasts */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 0.65rem 1rem;
+      border-radius: 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+      transform: translateY(2rem);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 1000;
+    }
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Alerts Floating Banner */
+    #spam-alert-toast {
+      position: fixed;
+      top: 4.5rem;
+      right: 1.5rem;
+      max-width: 380px;
+      width: calc(100% - 3rem);
+      background: var(--rose-600);
+      color: #fff;
+      padding: 0.85rem 1rem;
+      border-radius: 0.875rem;
+      box-shadow: 0 10px 25px rgba(225, 29, 72, 0.4);
+      z-index: 100;
+      display: none;
+      animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Background Canvas -->
+  <canvas id="ambient-canvas"></canvas>
+
+  <!-- Sticky Top Header -->
+  <header>
+    <div class="container">
+      <!-- Row 1: Brand & Status -->
+      <div class="header-row">
+        <div class="brand-group">
+          <div class="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline>
+              <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h1>
+              <span>Deliverability &amp; Inbox Pulse</span>
+              <span id="badge-active-scope" class="badge badge-indigo">📅 Today's Mail</span>
+            </h1>
+            <div class="badge-bar">
+              <span class="badge badge-emerald">⚡ 1 Domain = 1 Unit</span>
+              <span class="badge badge-amber">⏳ Scope: Today &amp; Yesterday</span>
+              <span class="badge badge-sky">🛡️ 4 Seeds Monitored</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls-group">
+          <button id="btn-lock-toggle" class="btn" title="Client Admin Protection">
+            <span id="lock-icon">🔒</span>
+            <span id="lock-label">Admin Locked</span>
+          </button>
+          <button id="btn-open-alerts" class="btn btn-amber">
+            <span style="font-size: 0.85rem">🔔</span>
+            <span>Alerts</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Row 2: Refresh Controls -->
+      <div class="header-row" style="margin-top: 0.65rem; padding-top: 0.5rem; border-top: 1px solid #f1f5f9;">
+        <div class="controls-group">
+          <!-- Countdown Circle Timer -->
+          <div style="display:flex; align-items:center; gap:0.4rem; background:#f1f5f9; padding:0.25rem 0.65rem; border-radius:0.5rem; font-size:0.75rem;">
+            <div style="position:relative; width:1.25rem; height:1.25rem; display:flex; align-items:center; justify-content:center;">
+              <svg width="20" height="20" viewBox="0 0 36 36" style="transform: rotate(-90deg);">
+                <circle cx="18" cy="18" r="14" fill="none" stroke="#e2e8f0" stroke-width="3.5"></circle>
+                <circle id="countdown-circle" cx="18" cy="18" r="14" fill="none" stroke="#6366f1" stroke-width="3.5" stroke-dasharray="88" stroke-dashoffset="0" stroke-linecap="round" style="transition: stroke-dashoffset 1s linear;"></circle>
+              </svg>
+              <span id="countdown-sec" style="position:absolute; font-size:0.55rem; font-weight:700; font-family:var(--font-mono);">30</span>
+            </div>
+            <span id="countdown-text" style="font-weight:600; color:var(--text-muted);">Syncing</span>
+          </div>
+
+          <button id="btn-pause-resume" class="btn">
+            <span id="timer-icon">⏸</span>
+            <span id="timer-label">Pause</span>
+          </button>
+
+          <button id="btn-simulate-event" class="btn" title="Generate test incoming email" style="color:var(--indigo-600); border-color:var(--indigo-200);">
+            <span>⚡ Demo Event</span>
+          </button>
+        </div>
+
+        <div class="controls-group">
+          <button id="btn-scope-yesterday" class="btn btn-violet">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Yesterday</span>
+          </button>
+          <button id="btn-sync-now" class="btn btn-primary">
+            <svg id="sync-spinner" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
+            <span>Sync Now</span>
+          </button>
+          <div style="font-size:0.7rem; color:var(--text-muted); margin-left:0.25rem;">
+            Polled: <strong id="header-polled-time" class="font-mono text-main">Just now</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tab Bar -->
+  <div class="nav-bar">
+    <div class="container">
+      <div class="tab-list no-scrollbar">
+        <button class="tab-btn active" data-tab="live">
+          <span>Live Monitor</span>
+          <span id="badge-records-total" class="badge badge-indigo">0</span>
+        </button>
+        <button class="tab-btn" data-tab="sheet1">
+          <span class="tab-lock-indicator">🔒</span>
+          <span>Sheet1 Cache</span>
+          <span id="badge-sheet1-count" class="badge badge-slate">0</span>
+        </button>
+        <button class="tab-btn" data-tab="reused">
+          <span class="tab-lock-indicator">🔒</span>
+          <span>Reused Domains</span>
+          <span id="badge-reused-count" class="badge badge-slate">0</span>
+        </button>
+        <button class="tab-btn" data-tab="logs">
+          <span class="tab-lock-indicator">🔒</span>
+          <span>Diagnostics Log</span>
+          <span style="width:6px; height:6px; border-radius:50%; background:var(--emerald-500); display:inline-block;"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Body Content -->
+  <main class="container" style="flex:1;">
+    
+    <!-- 5 KPI Headline Cards -->
+    <section class="kpi-grid">
+      <!-- Total -->
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span id="kpi-scope-title">Total Mails</span>
+          <span class="badge badge-slate">Unique Units</span>
+        </div>
+        <div class="kpi-value-row">
+          <span id="kpi-total-val" class="kpi-value">0</span>
+          <span style="font-size: 0.7rem; color:var(--text-muted);">1 Domain = 1 Unit</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div style="width: 100%; height:100%; background: var(--indigo-600);"></div>
+        </div>
+      </div>
+
+      <!-- Inbox -->
+      <div class="kpi-card" style="background:var(--emerald-50); border-color:var(--emerald-200);">
+        <div class="kpi-header" style="color:var(--emerald-700);">
+          <span>Inbox Placed</span>
+          <span id="kpi-inbox-pct" class="badge badge-emerald">0%</span>
+        </div>
+        <div class="kpi-value-row">
+          <span id="kpi-inbox-val" class="kpi-value" style="color:var(--emerald-600);">0</span>
+          <span style="font-size:0.7rem; color:var(--emerald-700);">Clean Placements</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div id="kpi-inbox-fill" class="progress-bar-fill" style="width: 0%; background: var(--emerald-500);"></div>
+        </div>
+      </div>
+
+      <!-- Spam -->
+      <div class="kpi-card" style="background:var(--rose-50); border-color:var(--rose-200);">
+        <div class="kpi-header" style="color:var(--rose-700);">
+          <span>Spam Landings</span>
+          <span id="kpi-spam-pct" class="badge badge-rose">0%</span>
+        </div>
+        <div class="kpi-value-row">
+          <span id="kpi-spam-val" class="kpi-value" style="color:var(--rose-600);">0</span>
+          <span style="font-size:0.7rem; color:var(--rose-700);">At Least 1 Spam</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div id="kpi-spam-fill" class="progress-bar-fill" style="width: 0%; background: var(--rose-500);"></div>
+        </div>
+      </div>
+
+      <!-- Valid Mapped Domains -->
+      <div class="kpi-card" style="background:var(--indigo-50); border-color:var(--indigo-200);">
+        <div class="kpi-header" style="color:var(--indigo-700);">
+          <span>Valid Domains</span>
+          <span id="kpi-mapped-badge" class="badge badge-indigo">0 Mapped</span>
+        </div>
+        <div class="kpi-value-row">
+          <span id="kpi-domains-val" class="kpi-value" style="color:var(--indigo-600);">0</span>
+          <span style="font-size:0.7rem; color:var(--indigo-700);">Across 2 Sheets</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div style="width: 100%; height:100%; background: var(--indigo-200);"></div>
+        </div>
+      </div>
+
+      <!-- Active Seeds -->
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>Active Seeds</span>
+          <span class="badge badge-emerald">Operational</span>
+        </div>
+        <div class="kpi-value-row">
+          <span class="kpi-value">4 / 4</span>
+          <div style="display:flex; gap:0.25rem;">
+            <span style="width:8px; height:8px; border-radius:50%; background:var(--emerald-500);" title="Seed 1 (Opener)"></span>
+            <span style="width:8px; height:8px; border-radius:50%; background:var(--emerald-500);" title="Seed 2 (Opener)"></span>
+            <span style="width:8px; height:8px; border-radius:50%; background:var(--emerald-500);" title="Seed 3 (Non-Opener)"></span>
+            <span style="width:8px; height:8px; border-radius:50%; background:var(--emerald-500);" title="Seed 4 (Non-Opener)"></span>
+          </div>
+        </div>
+        <div style="font-size:0.65rem; color:var(--text-muted); margin-top:0.25rem;">2 Openers · 2 Non-Openers</div>
+      </div>
+    </section>
+
+    <!-- TAB 1: LIVE MONITOR -->
+    <div id="tab-live" class="tab-content">
+      <!-- Universal Filters Row -->
+      <div class="panel-card" style="padding: 0.75rem 1rem; margin-bottom: 1rem;">
+        <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; justify-content:space-between;">
+          <div style="display:flex; flex-wrap:wrap; gap:0.5rem; flex:1; min-width:280px;">
+            <input id="filter-search" type="text" placeholder="Search domain, Universal ET, subject..." class="input-text" style="flex:2; min-width:180px;">
+            <select id="filter-et" class="select-input" style="flex:1; min-width:140px;">
+              <option value="ALL">All Universal ETs</option>
+              <option value="MAPPED">Mapped Only</option>
+              <option value="UNMAPPED">Unmapped Only</option>
+            </select>
+            <select id="filter-placement" class="select-input" style="flex:1; min-width:140px;">
+              <option value="ALL">All Placements</option>
+              <option value="HAS_SPAM">⚠️ Has Spam Placement</option>
+              <option value="ALL_INBOX">✓ 100% Inboxed (4/4)</option>
+              <option value="PARTIAL_INBOX">Partial Inbox (1-3)</option>
+              <option value="ZERO_INBOX">Zero Inbox (0/4)</option>
+            </select>
+          </div>
+          <button id="btn-export-csv" class="btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Export CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3-Column Layout -->
+      <div class="dashboard-layout">
+        
+        <!-- Left: Universal ET Directory -->
+        <aside class="panel-card" style="max-height: calc(100vh - 280px); display:flex; flex-direction:column;">
+          <div style="padding:0.75rem 1rem; border-bottom:1px solid var(--border-color); background:#fafafa; display:flex; align-items:center; justify-content:space-between;">
+            <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">Universal ETs</div>
+            <span id="sidebar-et-badge" class="badge badge-indigo">0</span>
+          </div>
+          <div style="padding:0.5rem; border-bottom:1px solid var(--border-color);">
+            <input id="sidebar-et-search" type="text" placeholder="Filter ETs..." class="input-text" style="height:1.9rem; font-size:0.7rem;">
+          </div>
+          <div id="sidebar-et-list" style="overflow-y:auto; flex:1; padding:0.25rem 0;">
+            <!-- Rendered list items -->
+          </div>
+        </aside>
+
+        <!-- Center: Domain Units -->
+        <section>
+          <div id="active-filter-indicator" style="display:none; align-items:center; justify-content:space-between; background:var(--indigo-50); border:1px solid var(--indigo-200); padding:0.4rem 0.75rem; border-radius:0.625rem; margin-bottom:0.75rem; font-size:0.75rem;">
+            <span>Category Filter: <strong id="active-filter-label" style="color:var(--indigo-700)"></strong></span>
+            <button id="btn-clear-category-filter" style="background:none; border:none; color:var(--indigo-600); font-weight:700; cursor:pointer;">✕ Clear</button>
+          </div>
+          <div id="domain-cards-list">
+            <!-- Rendered domain cards -->
+          </div>
+        </section>
+
+        <!-- Right: Placement Pulse SVG Donut -->
+        <aside class="panel-card right-column" style="padding: 1rem; position: sticky; top: 9rem;">
+          <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0.75rem; display:flex; align-items:center; justify-content:space-between;">
+            <div>
+              <h3 style="font-size:0.75rem; font-weight:700; text-transform:uppercase;">Placement Pulse</h3>
+              <p id="donut-scope-desc" style="font-size:0.65rem; color:var(--text-muted);">All Campaigns</p>
+            </div>
+            <span id="donut-total-count" class="badge badge-slate">0 units</span>
+          </div>
+
+          <div style="position:relative; display:flex; align-items:center; justify-content:center; margin: 0.5rem 0;">
+            <svg id="donut-svg" width="180" height="180" viewBox="0 0 200 200" style="transform: rotate(-90deg);">
+              <circle cx="100" cy="100" r="70" fill="none" stroke="#f1f5f9" stroke-width="22"></circle>
+            </svg>
+            <div style="position:absolute; display:flex; flex-direction:column; align-items:center; pointer-events:none; text-align:center;">
+              <span id="donut-center-number" style="font-size:1.75rem; font-weight:800; line-height:1;">0</span>
+              <span style="font-size:0.6rem; color:var(--text-light); text-transform:uppercase; font-weight:700;">Unique Units</span>
+            </div>
+          </div>
+
+          <div id="donut-legend-list" style="margin-top:0.75rem; display:flex; flex-direction:column; gap:0.35rem;">
+            <!-- Interactive Legend -->
+          </div>
+        </aside>
+
+      </div>
+    </div>
+
+    <!-- TAB 2: SHEET 1 CACHE -->
+    <div id="tab-sheet1" class="tab-content" style="display:none; margin-bottom: 3rem;">
+      <div class="panel-card" style="padding: 1.25rem; margin-bottom: 1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
+          <div>
+            <h3 style="font-size:0.9rem; font-weight:700;">Sheet1 Mapping Cache</h3>
+            <p style="font-size:0.7rem; color:var(--text-muted);">Primary Google Sheet source with automatic cross-origin and CSV parsing fallbacks.</p>
+          </div>
+          <div style="display:flex; gap:0.5rem;">
+            <button id="btn-paste-sheet1" class="btn">📋 Quick Paste</button>
+            <button id="btn-fetch-sheet1" class="btn btn-primary">Sync URL</button>
+          </div>
+        </div>
+        <input id="input-sheet1-url" type="text" class="input-text font-mono" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vTjA8aNW5lpl6B2zqdR3CtMdVEv_hCkfkwWbyWIkZAc3tbQxgxE67g6jO5QkLftCZL_nBSPSDtHMmud/pub?gid=0&amp;single=true&amp;output=csv">
+        <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-top:0.5rem;">
+          <span>Status: <strong id="status-sheet1-text" class="text-main">Ready</strong></span>
+          <span id="time-sheet1-synced">Never synced</span>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div style="padding:0.75rem 1rem; background:#fafafa; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.75rem; font-weight:700;">Cached Records (<span id="table-sheet1-count">0</span>)</span>
+          <span class="badge badge-amber">Today &amp; Yesterday Filter Active</span>
+        </div>
+        <div style="max-height: 400px; overflow-y:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.75rem; text-align:left;">
+            <thead style="background:#f1f5f9; position:sticky; top:0; z-index:5;">
+              <tr>
+                <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Domain</th>
+                <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Universal ET</th>
+                <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Date</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-sheet1">
+              <tr><td colspan="3" style="text-align:center; padding:2rem; color:var(--text-light);">No cached data loaded.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: REUSED DOMAINS -->
+    <div id="tab-reused" class="tab-content" style="display:none; margin-bottom: 3rem;">
+      <div class="panel-card" style="padding: 1.25rem; margin-bottom: 1rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
+          <div>
+            <h3 style="font-size:0.9rem; font-weight:700;">Reused Domains Secondary Cache</h3>
+            <p style="font-size:0.7rem; color:var(--text-muted);">Secondary mappings cache for reused campaigns.</p>
+          </div>
+          <div style="display:flex; gap:0.5rem;">
+            <button id="btn-paste-reused" class="btn">📋 Quick Paste</button>
+            <button id="btn-fetch-reused" class="btn btn-violet">Sync URL</button>
+          </div>
+        </div>
+        <input id="input-reused-url" type="text" class="input-text font-mono" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vTjA8aNW5lpl6B2zqdR3CtMdVEv_hCkfkwWbyWIkZAc3tbQxgxE67g6jO5QkLftCZL_nBSPSDtHMmud/pub?gid=1798344486&amp;single=true&amp;output=csv">
+        <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-top:0.5rem;">
+          <span>Status: <strong id="status-reused-text" class="text-main">Ready</strong></span>
+          <span id="time-reused-synced">Never synced</span>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <div style="padding:0.75rem 1rem; background:#fafafa; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.75rem; font-weight:700;">Cached Records (<span id="table-reused-count">0</span>)</span>
+          <span class="badge badge-amber">Today &amp; Yesterday Filter Active</span>
+        </div>
+        <div style="max-height: 400px; overflow-y:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.75rem; text-align:left;">
+            <thead style="background:#f1f5f9; position:sticky; top:0; z-index:5;">
+              <tr>
+                <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Domain</th>
+                <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Universal ET</th>
+                <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Date</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-reused">
+              <tr><td colspan="3" style="text-align:center; padding:2rem; color:var(--text-light);">No cached data loaded.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: LOGS TERMINAL -->
+    <div id="tab-logs" class="tab-content" style="display:none; margin-bottom: 3rem;">
+      <div class="panel-card" style="overflow:hidden;">
+        <div style="padding:0.75rem 1rem; background:#0f172a; color:#f8fafc; display:flex; align-items:center; justify-content:space-between;">
+          <span style="font-size:0.75rem; font-weight:700; font-family:var(--font-mono);">Live Operations &amp; Diagnostic Terminal</span>
+          <button id="btn-clear-logs" style="background:none; border:none; color:#94a3b8; font-size:0.7rem; cursor:pointer; text-decoration:underline;">Clear Logs</button>
+        </div>
+        <div id="terminal-container" class="terminal-body no-scrollbar">
+          <!-- Log lines -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Alerts Modal -->
+  <div id="modal-alerts" class="modal-overlay">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border-color);">
+        <h4 style="font-size:0.85rem; font-weight:700; display:flex; align-items:center; gap:0.4rem;">
+          <span>🔔</span> Notifications &amp; Alert Settings
+        </h4>
+        <button class="btn-close-modal" style="background:none; border:none; font-size:1.1rem; cursor:pointer; color:var(--text-muted);">✕</button>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:0.75rem;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:0.6rem; border-radius:0.5rem; border:1px solid var(--border-color); background:#f8fafc;">
+          <div>
+            <div style="font-size:0.75rem; font-weight:700;">HTML5 Browser Push</div>
+            <div style="font-size:0.65rem; color:var(--text-muted);">Desktop popups on spam placement</div>
+          </div>
+          <input id="cfg-browser-push" type="checkbox" checked style="width:1rem; height:1rem; cursor:pointer;">
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:0.6rem; border-radius:0.5rem; border:1px solid var(--border-color); background:#f8fafc;">
+          <div>
+            <div style="font-size:0.75rem; font-weight:700;">Web Audio Chime</div>
+            <div style="font-size:0.65rem; color:var(--text-muted);">Synthesizes an immediate warning audio cue</div>
+          </div>
+          <input id="cfg-audio" type="checkbox" checked style="width:1rem; height:1rem; cursor:pointer;">
+        </div>
+
+        <div style="padding:0.6rem; border-radius:0.5rem; border:1px solid var(--border-color); background:#f8fafc; display:flex; flex-direction:column; gap:0.35rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-size:0.75rem; font-weight:700;">Mobile Push via ntfy.sh</div>
+            <input id="cfg-mobile-push" type="checkbox" checked style="width:1rem; height:1rem; cursor:pointer;">
+          </div>
+          <div style="display:flex; align-items:center; gap:0.25rem;">
+            <span style="font-size:0.7rem; color:var(--text-muted); font-family:var(--font-mono);">ntfy.sh/</span>
+            <input id="cfg-ntfy-topic" type="text" class="input-text font-mono" value="spam_alerts_seed_channel" style="height:1.8rem; font-size:0.7rem;">
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.25rem; padding-top:0.75rem; border-top:1px solid var(--border-color);">
+        <button id="btn-test-alert" class="btn">Test Siren &amp; Alert</button>
+        <button id="btn-save-alerts" class="btn btn-primary">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Paste Modal -->
+  <div id="modal-paste" class="modal-overlay">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border-color);">
+        <h4 id="paste-modal-title" style="font-size:0.85rem; font-weight:700;">Quick Paste CSV/TSV Data</h4>
+        <button class="btn-close-modal" style="background:none; border:none; font-size:1.1rem; cursor:pointer; color:var(--text-muted);">✕</button>
+      </div>
+      <p style="font-size:0.7rem; color:var(--text-muted); margin-bottom:0.5rem;">
+        Paste tabular rows with headers: <code>Domains</code>, <code>Universal ET Name</code>, <code>Date</code>
+      </p>
+      <textarea id="paste-textarea" rows="7" style="width:100%; border:1px solid var(--border-color); border-radius:0.5rem; padding:0.5rem; font-family:var(--font-mono); font-size:0.7rem; outline:none;" placeholder="domain.com,CAMPAIGN_A,2026-10-14&#10;example.org,CAMPAIGN_B,2026-10-13"></textarea>
+      <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:0.75rem;">
+        <button class="btn btn-close-modal">Cancel</button>
+        <button id="btn-apply-paste" class="btn btn-primary">Parse &amp; Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Passcode Modal -->
+  <div id="modal-password" class="modal-overlay">
+    <div class="modal-box" style="max-width:340px;">
+      <h4 style="font-size:0.85rem; font-weight:700; margin-bottom:0.5rem;">Admin Lock Screen</h4>
+      <p style="font-size:0.7rem; color:var(--text-muted); margin-bottom:0.75rem;">Protected management tab. Default client demo passcode is <code>admin123</code>.</p>
+      <input id="input-password" type="password" placeholder="Enter password..." class="input-text" style="margin-bottom:0.5rem;">
+      <p id="password-error" style="color:var(--rose-600); font-size:0.65rem; display:none; margin-bottom:0.5rem;">Invalid passcode.</p>
+      <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+        <button class="btn btn-close-modal">Cancel</button>
+        <button id="btn-submit-pass" class="btn btn-primary">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spam In-App Toast -->
+  <div id="spam-alert-toast">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:0.5rem;">
+      <div>
+        <div style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--rose-100);">🚨 Spam Detected</div>
+        <div id="toast-spam-et" style="font-size:0.8rem; font-weight:700; margin-top:0.15rem;">Universal ET</div>
+      </div>
+      <button id="btn-close-spam-alert" style="background:none; border:none; color:#fff; font-size:1rem; cursor:pointer;">✕</button>
+    </div>
+    <div style="margin-top:0.5rem; font-size:0.7rem; background:rgba(0,0,0,0.15); padding:0.4rem 0.6rem; border-radius:0.375rem; font-family:var(--font-mono);">
+      <div>Domain: <span id="toast-spam-dom"></span></div>
+      <div>Seed: <span id="toast-spam-acc"></span></div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast">
+    <span style="color:var(--emerald-500)">✓</span>
+    <span id="toast-msg">Notification message</span>
+  </div>
+
+  <!-- Application Engine Script -->
+  <script>
+    (function () {
+      'use strict';
+
+      // --- CONFIGURATION & SEEDS ---
+      const DEFAULT_ADMIN_PASS = 'admin123';
+      let isAdminUnlocked = false;
+      let pendingLockedTab = null;
+
+     const SEED_ACCOUNTS = [
+  { 
+    id: 'acc_1', 
+    name: 'heenaguptaopn', 
+    role: 'Opener',
+    token: '1//0g_m2eiIDKjCJCgYIARAAGBASNwF-L9IrUAXQchNOI3g2jEEZfT670RMYCrVuqFjBNw_Uidwk8Yp0f9TTg6l2aGe7jqdYG5uR9fo'  // <-- Place token 1 here
+  },
+  { 
+    id: 'acc_2', 
+    name: 'mohiniagopn', 
+    role: 'Opener',
+    token: '1//0gQB0SkGpOtfJCgYIARAAGBASNwF-L9IreXloHTzRyml1sLpOystS_R_8bH5j_hzY5FzI2Hsj2s4s0DyelBXgmfelRuj4VXN6gSo'  // <-- Place token 2 here
+  },
+  { 
+    id: 'acc_3', 
+    name: 'srishtiguptanonopn', 
+    role: 'Non-Opener',
+    token: '1//0g1C75vTenZJfCgYIARAAGBASNwF-L9Ir0iqeR_jQanVEMcWqYEJ4qCxNn6qeG0OHKkcSPkiagfXArxQBCamUdgaPNMpKIuYcj9o'  // <-- Place token 3 here
+  },
+  { 
+    id: 'acc_4', 
+    name: 'jasminesandallasnonopn', 
+    role: 'Non-Opener',
+    token: '1//0gPzLNn9_KRgyCgYIARAAGBASNwF-L9IrsR_yLYmw-b5M9n1pNx-ss0DzZhuXHdDokqRAuL_Ulw_l0CPefxT6fuPDHEdB5RmHJtA'  // <-- Place token 4 here
+  }
+];
+      // Initial Demo Mappings
+      const initialSheet1Data = [
+        { domain: 'apexnewsletters.com', etName: 'JSG 30', dateStr: '2026-10-14' },
+        { domain: 'primepulsemailer.net', etName: 'JSG 30', dateStr: '2026-10-14' },
+        { domain: 'cloudfrontiertech.com', etName: 'AUTOSPOT 12', dateStr: '2026-10-14' },
+        { domain: 'globalinsightsdigest.org', etName: 'FINANCE FEED', dateStr: '2026-10-13' },
+        { domain: 'dailyinboxdirect.co', etName: 'HEALTH DIGEST', dateStr: '2026-10-14' }
+      ];
+
+      const initialReusedData = [
+        { domain: 'swiftdispatchhub.com', etName: 'REUSED PROMO', dateStr: '2026-10-14' },
+        { domain: 'marketorbitdaily.info', etName: 'FLASH 22', dateStr: '2026-10-13' }
+      ];
+
+      // State Containers
+      let currentScope = 'TODAY'; // 'TODAY' or 'YESTERDAY'
+      let isTimerPaused = false;
+      let countdown = 30;
+      let countdownTimer = null;
+      let activePasteTarget = 'sheet1';
+      let selectedDonutCategory = 'ALL';
+
+      const sheet1Map = new Map();
+      const reusedMap = new Map();
+      let emailRecords = []; // Master list of monitored units
+
+      // Notifications Settings
+      const alertConfig = {
+        browserPush: true,
+        audio: true,
+        mobilePush: true,
+        ntfyTopic: 'spam_alerts_seed_channel'
+      };
+
+      // --- DOM REFS ---
+      const countdownSecEl = document.getElementById('countdown-sec');
+      const countdownCircleEl = document.getElementById('countdown-circle');
+      const countdownTextEl = document.getElementById('countdown-text');
+      const btnPauseResume = document.getElementById('btn-pause-resume');
+      const timerIconEl = document.getElementById('timer-icon');
+      const timerLabelEl = document.getElementById('timer-label');
+      const btnSyncNow = document.getElementById('btn-sync-now');
+      const btnScopeYesterday = document.getElementById('btn-scope-yesterday');
+      const badgeActiveScopeEl = document.getElementById('badge-active-scope');
+      const kpiScopeTitleEl = document.getElementById('kpi-scope-title');
+      const headerPolledTimeEl = document.getElementById('header-polled-time');
+
+      const kpiTotalVal = document.getElementById('kpi-total-val');
+      const kpiInboxVal = document.getElementById('kpi-inbox-val');
+      const kpiInboxPct = document.getElementById('kpi-inbox-pct');
+      const kpiInboxFill = document.getElementById('kpi-inbox-fill');
+      const kpiSpamVal = document.getElementById('kpi-spam-val');
+      const kpiSpamPct = document.getElementById('kpi-spam-pct');
+      const kpiSpamFill = document.getElementById('kpi-spam-fill');
+      const kpiDomainsVal = document.getElementById('kpi-domains-val');
+      const kpiMappedBadge = document.getElementById('kpi-mapped-badge');
+
+      const filterSearchInput = document.getElementById('filter-search');
+      const filterEtSelect = document.getElementById('filter-et');
+      const filterPlacementSelect = document.getElementById('filter-placement');
+      const btnExportCsv = document.getElementById('btn-export-csv');
+
+      const sidebarEtList = document.getElementById('sidebar-et-list');
+      const sidebarEtBadge = document.getElementById('sidebar-et-badge');
+      const sidebarEtSearchInput = document.getElementById('sidebar-et-search');
+
+      const domainCardsList = document.getElementById('domain-cards-list');
+      const donutSvg = document.getElementById('donut-svg');
+      const donutCenterNumber = document.getElementById('donut-center-number');
+      const donutTotalCount = document.getElementById('donut-total-count');
+      const donutScopeDesc = document.getElementById('donut-scope-desc');
+      const donutLegendList = document.getElementById('donut-legend-list');
+      const activeFilterIndicator = document.getElementById('active-filter-indicator');
+      const activeFilterLabel = document.getElementById('active-filter-label');
+      const btnClearCategoryFilter = document.getElementById('btn-clear-category-filter');
+
+      const btnLockToggle = document.getElementById('btn-lock-toggle');
+      const lockIconEl = document.getElementById('lock-icon');
+      const lockLabelEl = document.getElementById('lock-label');
+
+      // Modals
+      const modalAlerts = document.getElementById('modal-alerts');
+      const modalPaste = document.getElementById('modal-paste');
+      const modalPassword = document.getElementById('modal-password');
+      const pasteTextarea = document.getElementById('paste-textarea');
+      const pasteModalTitle = document.getElementById('paste-modal-title');
+      const inputPassword = document.getElementById('input-password');
+      const passwordError = document.getElementById('password-error');
+
+      // Diagnostics & Toasts
+      const terminalContainer = document.getElementById('terminal-container');
+      const toastEl = document.getElementById('toast');
+      const toastMsgEl = document.getElementById('toast-msg');
+      const spamAlertToast = document.getElementById('spam-alert-toast');
+      const toastSpamEt = document.getElementById('toast-spam-et');
+      const toastSpamDom = document.getElementById('toast-spam-dom');
+      const toastSpamAcc = document.getElementById('toast-spam-acc');
+
+      // --- AUDIO SYNTHESIZER ---
+      function triggerSirenSound() {
+        if (!alertConfig.audio) return;
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+          const ctx = new AudioContext();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(800, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(350, ctx.currentTime + 0.3);
+          gain.gain.setValueAtTime(0.2, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.3);
+        } catch (e) {
+          // Audio autoplay policies or unsupported context
+        }
+      }
+
+      // --- LOGGING ---
+      function log(msg, type = 'info') {
+        const time = new Date().toLocaleTimeString();
+        const row = document.createElement('div');
+        row.className = 'log-row';
+        let color = '#94a3b8';
+        if (type === 'success') color = '#34d399';
+        if (type === 'warn') color = '#fbbf24';
+        if (type === 'error') color = '#f87171';
+
+        row.innerHTML = `<span style="color:#64748b; flex-shrink:0;">[${time}]</span><span style="color:${color};">${escapeHtml(msg)}</span>`;
+        terminalContainer.appendChild(row);
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      function showToast(msg) {
+        toastMsgEl.textContent = msg;
+        toastEl.classList.add('show');
+        setTimeout(() => toastEl.classList.remove('show'), 2400);
+      }
+
+      // --- NORMALIZATION HELPERS ---
+      function normalizeDomain(dom) {
+        if (!dom) return '';
+        return String(dom).replace(/\s+/g, '').toLowerCase().trim();
+      }
+
+      function toUniversalET(name) {
+        if (!name) return 'UNMAPPED';
+        let clean = String(name).trim();
+        clean = clean.replace(/\([^)]*\)/gi, ' ');
+        clean = clean.replace(/\b(met|extra|feed|tab|test)\b/gi, ' ');
+        clean = clean.replace(/[-_]+/g, ' ');
+        clean = clean.replace(/([a-zA-Z]+)(\d+)/g, '$1 $2');
+        clean = clean.replace(/(\d+)([a-zA-Z]+)/g, '$1 $2');
+        clean = clean.replace(/\s+/g, ' ').trim();
+        return clean ? clean.toUpperCase() : 'UNMAPPED';
+      }
+
+      function resolveEt(domain) {
+        const d = normalizeDomain(domain);
+        if (sheet1Map.has(d)) return sheet1Map.get(d).etName;
+        if (reusedMap.has(d)) return reusedMap.get(d).etName;
+        return 'Unmapped';
+      }
+
+      // --- INITIALIZE DATASETS ---
+      function populateInitialMappings() {
+        initialSheet1Data.forEach(item => {
+          sheet1Map.set(normalizeDomain(item.domain), { etName: toUniversalET(item.etName), dateStr: item.dateStr });
+        });
+        initialReusedData.forEach(item => {
+          reusedMap.set(normalizeDomain(item.domain), { etName: toUniversalET(item.etName), dateStr: item.dateStr });
+        });
+        renderSheetTables();
+      }
+
+      function generateDemoRecords() {
+        emailRecords = [];
+        const baseDomains = [
+          ...Array.from(sheet1Map.keys()),
+          ...Array.from(reusedMap.keys()),
+          'unmappedmailer101.com',
+          'beaconmailroutes.net'
+        ];
+
+        const sampleSubjects = [
+          'Important update regarding your subscription renewal',
+          'Exclusive weekly digest and industry intelligence',
+          'Your verification code for system login',
+          'Special promotional reward inside!'
+        ];
+
+        baseDomains.forEach((dom, index) => {
+          const et = resolveEt(dom);
+          const unit = {
+            domain: dom,
+            etName: et,
+            normalizedET: toUniversalET(et),
+            date: currentScope === 'TODAY' ? '2026-10-14' : '2026-10-13',
+            time: new Date(Date.now() - (index * 420000)),
+            subject: sampleSubjects[index % sampleSubjects.length],
+            placements: {}
+          };
+
+          // Distribute placement status across the 4 seeds
+          SEED_ACCOUNTS.forEach((acc, aIdx) => {
+            let status = 'INBOX';
+            if (index === 1 && aIdx === 2) status = 'SPAM'; // Primepulsemailer has a spam placement
+            if (index === 3 && aIdx > 1) status = 'SPAM';   // Globalinsights has 2 spams
+            if (index === 4) status = 'INBOX';             // 100% Inboxed
+            if (index === 5 && aIdx === 0) status = 'SPAM';
+            unit.placements[acc.name] = status;
+          });
+
+          emailRecords.push(unit);
+        });
+
+        log(`Dataset generated for scope: ${currentScope}. Total units: ${emailRecords.length}`, 'info');
+      }
+
+      // --- CALCULATIONS & AGGREGATIONS ---
+      function getFilteredRecords() {
+        const query = filterSearchInput.value.toLowerCase().trim();
+        const etFilter = filterEtSelect.value;
+        const placeFilter = filterPlacementSelect.value;
+
+        return emailRecords.filter(unit => {
+          // Search query
+          if (query) {
+            const matchDom = unit.domain.toLowerCase().includes(query);
+            const matchEt = unit.etName.toLowerCase().includes(query);
+            const matchSubj = unit.subject.toLowerCase().includes(query);
+            if (!matchDom && !matchEt && !matchSubj) return false;
+          }
+
+          // Universal ET Filter
+          if (etFilter === 'MAPPED' && unit.normalizedET === 'UNMAPPED') return false;
+          if (etFilter === 'UNMAPPED' && unit.normalizedET !== 'UNMAPPED') return false;
+          if (etFilter !== 'ALL' && etFilter !== 'MAPPED' && etFilter !== 'UNMAPPED') {
+            if (unit.normalizedET !== etFilter) return false;
+          }
+
+          // Compute placements
+          let inboxCount = 0;
+          let spamCount = 0;
+          Object.values(unit.placements).forEach(st => {
+            if (st === 'INBOX') inboxCount++;
+            if (st === 'SPAM') spamCount++;
+          });
+
+          // Placement status dropdown filter
+          if (placeFilter === 'HAS_SPAM' && spamCount === 0) return false;
+          if (placeFilter === 'ALL_INBOX' && inboxCount !== 4) return false;
+          if (placeFilter === 'PARTIAL_INBOX' && (inboxCount === 0 || inboxCount === 4)) return false;
+          if (placeFilter === 'ZERO_INBOX' && inboxCount !== 0) return false;
+
+          // Donut Category filter
+          if (selectedDonutCategory !== 'ALL') {
+            if (selectedDonutCategory === '4_inbox' && inboxCount !== 4) return false;
+            if (selectedDonutCategory === '3_inbox' && inboxCount !== 3) return false;
+            if (selectedDonutCategory === '2_inbox' && inboxCount !== 2) return false;
+            if (selectedDonutCategory === '1_inbox' && inboxCount !== 1) return false;
+            if (selectedDonutCategory === 'has_spam' && spamCount === 0) return false;
+          }
+
+          return true;
+        });
+      }
+
+      // --- RENDER FUNCTIONS ---
+      function updateDashboard() {
+        const visibleRecords = getFilteredRecords();
+        const totalUnits = emailRecords.length;
+
+        // KPI Calculations
+        let inboxCleanUnits = 0;
+        let spamUnits = 0;
+        let mappedUnits = 0;
+
+        emailRecords.forEach(u => {
+          let hasSpam = false;
+          let inboxCnt = 0;
+          Object.values(u.placements).forEach(st => {
+            if (st === 'SPAM') hasSpam = true;
+            if (st === 'INBOX') inboxCnt++;
+          });
+          if (inboxCnt > 0 && !hasSpam) inboxCleanUnits++;
+          if (hasSpam) spamUnits++;
+          if (u.normalizedET !== 'UNMAPPED') mappedUnits++;
+        });
+
+        const inboxPct = totalUnits > 0 ? ((inboxCleanUnits / totalUnits) * 100).toFixed(0) : 0;
+        const spamPct = totalUnits > 0 ? ((spamUnits / totalUnits) * 100).toFixed(0) : 0;
+
+        kpiTotalVal.textContent = totalUnits;
+        kpiInboxVal.textContent = inboxCleanUnits;
+        kpiInboxPct.textContent = `${inboxPct}%`;
+        kpiInboxFill.style.width = `${inboxPct}%`;
+
+        kpiSpamVal.textContent = spamUnits;
+        kpiSpamPct.textContent = `${spamPct}%`;
+        kpiSpamFill.style.width = `${spamPct}%`;
+
+        const totalCachedDomains = new Set([...sheet1Map.keys(), ...reusedMap.keys()]).size;
+        kpiDomainsVal.textContent = totalCachedDomains;
+        kpiMappedBadge.textContent = `${mappedUnits} Mapped`;
+
+        document.getElementById('badge-records-total').textContent = visibleRecords.length;
+
+        renderDomainCards(visibleRecords);
+        renderETSidebar();
+        renderDonutChart(visibleRecords);
+      }
+
+      function renderDomainCards(records) {
+        if (records.length === 0) {
+          domainCardsList.innerHTML = `
+            <div class="panel-card" style="padding: 2.5rem; text-align: center; color: var(--text-muted);">
+              <p style="font-weight: 700; margin-bottom: 0.25rem;">No Domain Units Match Your Filter</p>
+              <p style="font-size: 0.75rem;">Adjust search parameters, placement filters, or category selections.</p>
+            </div>
+          `;
+          return;
+        }
+
+        domainCardsList.innerHTML = records.map(rec => {
+          let inboxCount = 0;
+          let spamCount = 0;
+          Object.values(rec.placements).forEach(st => {
+            if (st === 'INBOX') inboxCount++;
+            if (st === 'SPAM') spamCount++;
+          });
+
+          const hasSpam = spamCount > 0;
+          const is4of4 = inboxCount === 4;
+
+          return `
+            <div class="domain-card ${hasSpam ? 'has-spam' : ''}">
+              <div class="domain-card-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'grid' : 'none'">
+                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;">
+                  <div style="min-width: 0;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                      <span class="font-mono" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">${escapeHtml(rec.domain)}</span>
+                      ${is4of4 ? '<span class="badge badge-emerald">✓ 4/4 Locked</span>' : ''}
+                      ${hasSpam ? '<span class="badge badge-rose">⚠️ Spam Landing</span>' : ''}
+                    </div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem;">
+                      ${rec.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · 
+                      <span style="color: var(--text-main); font-weight: 600;">${escapeHtml(rec.subject)}</span>
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 0.25rem; flex-shrink: 0;">
+                    <button class="btn" style="padding: 0.2rem 0.5rem; font-size: 0.65rem;" onclick="event.stopPropagation(); navigator.clipboard.writeText('${escapeHtml(rec.domain)}'); showToast('Copied: ${escapeHtml(rec.domain)}');">Copy</button>
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f1f5f9; padding-top: 0.4rem; margin-top: 0.2rem;">
+                  <div>
+                    ${rec.etName !== 'Unmapped' 
+                      ? `<span class="badge badge-indigo">🏷️ ${escapeHtml(rec.etName)}</span>` 
+                      : '<span class="badge badge-slate">Unmapped ET</span>'}
+                  </div>
+                  <div style="font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="color: ${inboxCount === 4 ? 'var(--emerald-600)' : inboxCount > 0 ? 'var(--indigo-600)' : 'var(--rose-600)'};">${inboxCount}/4 Inbox</span>
+                    ${spamCount > 0 ? `<span style="color: var(--rose-600);">(${spamCount} Spam)</span>` : ''}
+                    <span style="color: var(--text-light); font-size: 0.65rem;">▼</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Collapsible Seeds Subgrid -->
+              <div class="domain-subgrid" style="display: grid;">
+                ${SEED_ACCOUNTS.map(acc => {
+                  const st = rec.placements[acc.name] || 'UNKNOWN';
+                  const isInbox = st === 'INBOX';
+                  const isSpam = st === 'SPAM';
+                  return `
+                    <div class="account-pill ${isInbox ? 'inbox' : isSpam ? 'spam' : ''}">
+                      <div style="font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(acc.name)}</div>
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.65rem; color: var(--text-muted);">${acc.role}</span>
+                        <span style="font-weight: 800; font-size: 0.65rem; color: ${isInbox ? 'var(--emerald-700)' : isSpam ? 'var(--rose-700)' : 'var(--text-muted)'};">${st}</span>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function renderETSidebar() {
+        const query = (sidebarEtSearchInput.value || '').toLowerCase().trim();
+        const counts = new Map();
+        let totalMapped = 0;
+        let totalUnmapped = 0;
+
+        emailRecords.forEach(u => {
+          if (u.normalizedET === 'UNMAPPED') {
+            totalUnmapped++;
+          } else {
+            totalMapped++;
+            counts.set(u.normalizedET, (counts.get(u.normalizedET) || 0) + 1);
+          }
+        });
+
+        const sortedETs = Array.from(counts.keys()).sort();
+        sidebarEtBadge.textContent = sortedETs.length;
+
+        let html = `
+          <div onclick="selectETFilter('ALL')" style="padding:0.45rem 1rem; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-size:0.75rem; font-weight:600; border-left:3px solid ${filterEtSelect.value === 'ALL' ? 'var(--indigo-600)' : 'transparent'}; background:${filterEtSelect.value === 'ALL' ? 'var(--indigo-50)' : 'transparent'};">
+            <span>🌟 All Campaigns</span>
+            <span class="badge badge-slate">${emailRecords.length}</span>
+          </div>
+          <div onclick="selectETFilter('MAPPED')" style="padding:0.45rem 1rem; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-size:0.75rem; font-weight:600; border-left:3px solid ${filterEtSelect.value === 'MAPPED' ? 'var(--indigo-600)' : 'transparent'}; background:${filterEtSelect.value === 'MAPPED' ? 'var(--indigo-50)' : 'transparent'};">
+            <span>📌 Mapped ETs</span>
+            <span class="badge badge-indigo">${totalMapped}</span>
+          </div>
+        `;
+
+        if (totalUnmapped > 0) {
+          html += `
+            <div onclick="selectETFilter('UNMAPPED')" style="padding:0.45rem 1rem; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-size:0.75rem; font-weight:600; border-left:3px solid ${filterEtSelect.value === 'UNMAPPED' ? 'var(--indigo-600)' : 'transparent'}; background:${filterEtSelect.value === 'UNMAPPED' ? 'var(--indigo-50)' : 'transparent'};">
+              <span>⚠️ Unmapped</span>
+              <span class="badge badge-rose">${totalUnmapped}</span>
+            </div>
+          `;
+        }
+
+        html += '<div style="margin:0.4rem 1rem 0.2rem; font-size:0.65rem; font-weight:700; color:var(--text-light); text-transform:uppercase;">Campaign Names</div>';
+
+        sortedETs.forEach(et => {
+          if (query && !et.toLowerCase().includes(query)) return;
+          const count = counts.get(et);
+          const isSelected = filterEtSelect.value === et;
+          html += `
+            <div onclick="selectETFilter('${escapeHtml(et)}')" style="padding:0.45rem 1rem; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-size:0.75rem; font-weight:600; border-left:3px solid ${isSelected ? 'var(--indigo-600)' : 'transparent'}; background:${isSelected ? 'var(--indigo-50)' : 'transparent'};">
+              <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(et)}</span>
+              <span class="badge badge-slate">${count}</span>
+            </div>
+          `;
+        });
+
+        sidebarEtList.innerHTML = html;
+
+        // Also update filter dropdown
+        const cur = filterEtSelect.value;
+        filterEtSelect.innerHTML = `
+          <option value="ALL">All Universal ETs</option>
+          <option value="MAPPED">Mapped Only</option>
+          <option value="UNMAPPED">Unmapped Only</option>
+          <optgroup label="Campaigns">
+            ${sortedETs.map(et => `<option value="${escapeHtml(et)}">${escapeHtml(et)}</option>`).join('')}
+          </optgroup>
+        `;
+        filterEtSelect.value = cur;
+      }
+
+      window.selectETFilter = function(val) {
+        filterEtSelect.value = val;
+        updateDashboard();
+      };
+
+      function renderDonutChart(visibleRecords) {
+        let c4 = 0, c3 = 0, c2 = 0, c1 = 0, cSpam = 0;
+
+        visibleRecords.forEach(u => {
+          let inCnt = 0;
+          let spCnt = 0;
+          Object.values(u.placements).forEach(st => {
+            if (st === 'INBOX') inCnt++;
+            if (st === 'SPAM') spCnt++;
+          });
+          if (spCnt > 0) cSpam++;
+          if (inCnt === 4) c4++;
+          else if (inCnt === 3) c3++;
+          else if (inCnt === 2) c2++;
+          else if (inCnt === 1) c1++;
+        });
+
+        donutCenterNumber.textContent = visibleRecords.length;
+        donutTotalCount.textContent = `${visibleRecords.length} units`;
+        donutScopeDesc.textContent = filterEtSelect.value === 'ALL' ? 'All Campaigns' : filterEtSelect.value;
+
+        const categories = [
+          { key: '4_inbox', label: '4 ACs Inboxed', count: c4, color: '#10b981' },
+          { key: '3_inbox', label: '3 ACs Inboxed', count: c3, color: '#6366f1' },
+          { key: '2_inbox', label: '2 ACs Inboxed', count: c2, color: '#f59e0b' },
+          { key: '1_inbox', label: '1 AC Inboxed', count: c1, color: '#0ea5e9' },
+          { key: 'has_spam', label: 'Overall Spam', count: cSpam, color: '#f43f5e' }
+        ];
+
+        const totalDist = categories.reduce((sum, c) => sum + c.count, 0);
+        const radius = 70;
+        const circumference = 2 * Math.PI * radius;
+        let strokeOffset = 0;
+
+        let svgHtml = `<circle cx="100" cy="100" r="${radius}" fill="none" stroke="#f1f5f9" stroke-width="22"></circle>`;
+
+        if (totalDist > 0) {
+          categories.forEach(cat => {
+            if (cat.count <= 0) return;
+            const slice = (cat.count / totalDist) * circumference;
+            const isSel = selectedDonutCategory === cat.key;
+            const strokeW = isSel ? '26' : '22';
+            const opacity = (selectedDonutCategory !== 'ALL' && !isSel) ? '0.35' : '1';
+
+            svgHtml += `
+              <circle
+                class="donut-segment"
+                cx="100" cy="100" r="${radius}"
+                fill="none"
+                stroke="${cat.color}"
+                stroke-width="${strokeW}"
+                stroke-dasharray="${slice} ${circumference - slice}"
+                stroke-dashoffset="${-strokeOffset}"
+                opacity="${opacity}"
+                onclick="window.toggleDonutCategory('${cat.key}', '${escapeHtml(cat.label)}')"
+              ></circle>
+            `;
+            strokeOffset += slice;
+          });
+        }
+
+        donutSvg.innerHTML = svgHtml;
+
+        // Render Legend
+        donutLegendList.innerHTML = categories.map(cat => {
+          const pct = visibleRecords.length > 0 ? ((cat.count / visibleRecords.length) * 100).toFixed(0) : 0;
+          const isSel = selectedDonutCategory === cat.key;
+          return `
+            <div 
+              onclick="window.toggleDonutCategory('${cat.key}', '${escapeHtml(cat.label)}')"
+              style="display:flex; justify-content:space-between; align-items:center; padding:0.35rem 0.6rem; border-radius:0.5rem; cursor:pointer; font-size:0.7rem; border:1px solid ${isSel ? cat.color : 'transparent'}; background:${isSel ? '#f8fafc' : 'transparent'};"
+            >
+              <div style="display:flex; align-items:center; gap:0.4rem;">
+                <span style="width:8px; height:8px; border-radius:50%; background:${cat.color};"></span>
+                <span style="font-weight:600; color:var(--text-main);">${cat.label}</span>
+              </div>
+              <div class="font-mono">
+                <strong>${cat.count}</strong>
+                <span style="color:var(--text-light); font-size:0.65rem;">(${pct}%)</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        if (selectedDonutCategory !== 'ALL') {
+          activeFilterIndicator.style.display = 'flex';
+        } else {
+          activeFilterIndicator.style.display = 'none';
+        }
+      }
+
+      window.toggleDonutCategory = function(key, label) {
+        if (selectedDonutCategory === key) {
+          selectedDonutCategory = 'ALL';
+        } else {
+          selectedDonutCategory = key;
+          activeFilterLabel.textContent = label;
+        }
+        updateDashboard();
+      };
+
+      btnClearCategoryFilter.addEventListener('click', () => {
+        selectedDonutCategory = 'ALL';
+        updateDashboard();
+      });
+
+      // --- SHEET TABLES ---
+      function renderSheetTables() {
+        const tbody1 = document.getElementById('tbody-sheet1');
+        const tbody2 = document.getElementById('tbody-reused');
+        const count1 = document.getElementById('table-sheet1-count');
+        const count2 = document.getElementById('table-reused-count');
+        const badge1 = document.getElementById('badge-sheet1-count');
+        const badge2 = document.getElementById('badge-reused-count');
+
+        count1.textContent = sheet1Map.size;
+        badge1.textContent = sheet1Map.size;
+        count2.textContent = reusedMap.size;
+        badge2.textContent = reusedMap.size;
+
+        if (sheet1Map.size === 0) {
+          tbody1.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:2rem; color:var(--text-light);">No cached data.</td></tr>';
+        } else {
+          tbody1.innerHTML = Array.from(sheet1Map.entries()).map(([dom, val]) => `
+            <tr style="border-bottom:1px solid #f1f5f9;">
+              <td style="padding:0.4rem 1rem;" class="font-mono">${escapeHtml(dom)}</td>
+              <td style="padding:0.4rem 1rem; font-weight:600; color:var(--indigo-600);">${escapeHtml(val.etName)}</td>
+              <td style="padding:0.4rem 1rem; color:var(--text-muted);">${escapeHtml(val.dateStr)}</td>
+            </tr>
+          `).join('');
+        }
+
+        if (reusedMap.size === 0) {
+          tbody2.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:2rem; color:var(--text-light);">No cached data.</td></tr>';
+        } else {
+          tbody2.innerHTML = Array.from(reusedMap.entries()).map(([dom, val]) => `
+            <tr style="border-bottom:1px solid #f1f5f9;">
+              <td style="padding:0.4rem 1rem;" class="font-mono">${escapeHtml(dom)}</td>
+              <td style="padding:0.4rem 1rem; font-weight:600; color:var(--violet-600);">${escapeHtml(val.etName)}</td>
+              <td style="padding:0.4rem 1rem; color:var(--text-muted);">${escapeHtml(val.dateStr)}</td>
+            </tr>
+          `).join('');
+        }
+      }
+
+      // --- CSV / TSV PARSER ---
+      function parseDelimitedData(text) {
+        const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+        if (lines.length === 0) return [];
+        const result = [];
+
+        // Detect delimiter (comma or tab)
+        const delimiter = lines[0].includes('\t') ? '\t' : ',';
+        const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase());
+
+        let domIdx = headers.findIndex(h => h.includes('domain'));
+        let etIdx = headers.findIndex(h => h.includes('et') || h.includes('name'));
+        let dateIdx = headers.findIndex(h => h.includes('date'));
+
+        if (domIdx === -1) domIdx = 0;
+        if (etIdx === -1) etIdx = 1;
+
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(delimiter).map(c => c.trim().replace(/^"|"$/g, ''));
+          const dom = normalizeDomain(cols[domIdx]);
+          const rawEt = cols[etIdx] || 'Unmapped';
+          const dateStr = dateIdx !== -1 ? (cols[dateIdx] || '') : '';
+
+          if (dom && !dom.includes('domain')) {
+            result.push({ domain: dom, etName: toUniversalET(rawEt), dateStr });
+          }
+        }
+        return result;
+      }
+
+      // --- SYNC ENGINE ---
+      async function syncUrl(targetKey) {
+        const isSheet1 = targetKey === 'sheet1';
+        const inputEl = document.getElementById(isSheet1 ? 'input-sheet1-url' : 'input-reused-url');
+        const statusEl = document.getElementById(isSheet1 ? 'status-sheet1-text' : 'status-reused-text');
+        const timeEl = document.getElementById(isSheet1 ? 'time-sheet1-synced' : 'time-reused-synced');
+        const targetUrl = inputEl.value.trim();
+
+        statusEl.textContent = 'Syncing...';
+        log(`Initiating sync for ${isSheet1 ? 'Sheet1' : 'Reused Domains'}...`, 'info');
+
+        try {
+          // Attempt direct fetch, fallback to cors proxy if cross-origin blocked
+          let text = '';
+          try {
+            const resp = await fetch(targetUrl, { cache: 'no-store' });
+            if (resp.ok) text = await resp.text();
+          } catch (corsErr) {
+            log(`Direct CORS fetch failed; attempting public proxy...`, 'warn');
+            const proxyResp = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`);
+            if (proxyResp.ok) text = await proxyResp.text();
+          }
+
+          if (text && text.length > 20 && !text.includes('<!DOCTYPE html>')) {
+            const parsed = parseDelimitedData(text);
+            const targetMap = isSheet1 ? sheet1Map : reusedMap;
+            targetMap.clear();
+            parsed.forEach(item => targetMap.set(item.domain, { etName: item.etName, dateStr: item.dateStr }));
+
+            statusEl.textContent = `Active (${parsed.length} records)`;
+            timeEl.textContent = new Date().toLocaleTimeString();
+            renderSheetTables();
+            updateDashboard();
+            log(`Successfully synced ${parsed.length} mappings into ${isSheet1 ? 'Sheet1' : 'Reused Domains'}.`, 'success');
+            showToast(`Loaded ${parsed.length} mappings`);
+          } else {
+            throw new Error('Retrieved payload was empty or non-CSV format. Please use Quick Paste.');
+          }
+        } catch (err) {
+          statusEl.textContent = 'Sync Error';
+          log(`Failed to fetch published CSV: ${err.message}`, 'error');
+          showToast('Sync blocked by browser CORS. Use Quick Paste.');
+        }
+      }
+
+      // --- POLLING & TIMERS ---
+      function startCountdownTimer() {
+        if (countdownTimer) clearInterval(countdownTimer);
+        countdownTimer = setInterval(() => {
+          if (isTimerPaused) return;
+          countdown--;
+          if (countdown <= 0) {
+            countdown = 30;
+            performPollingCycle();
+          }
+          countdownSecEl.textContent = countdown;
+          const offset = 88 - (88 * countdown) / 30;
+          countdownCircleEl.style.strokeDashoffset = offset;
+          countdownCircleEl.style.stroke = countdown <= 5 ? 'var(--amber-500)' : 'var(--indigo-600)';
+        }, 1000);
+      }
+
+      function performPollingCycle() {
+        headerPolledTimeEl.textContent = new Date().toLocaleTimeString();
+        log(`Sync poll executed across 4 seed mailboxes for ${currentScope}.`, 'info');
+        updateDashboard();
+      }
+
+      // --- SIMULATION OF SPAM ARRIVAL ---
+      function simulateSpamArrival() {
+        const domains = ['demo-warning-inbox.com', 'mail-check-pulse.net', 'velocity-campaign.org'];
+        const chosenDom = domains[Math.floor(Math.random() * domains.length)];
+        const et = 'ALERT TEST ET';
+
+        const unit = {
+          domain: chosenDom,
+          etName: et,
+          normalizedET: toUniversalET(et),
+          date: '2026-10-14',
+          time: new Date(),
+          subject: 'URGENT: Placement test triggered alert',
+          placements: {
+            ashwindelaycheck: 'SPAM',
+            kartikdelaycheck: 'INBOX',
+            newnonop5: 'INBOX',
+            ashwinkartiknonop1710: 'INBOX'
+          }
+        };
+
+        emailRecords.unshift(unit);
+        updateDashboard();
+
+        // Trigger Alerts
+        triggerSirenSound();
+        log(`Spam placement detected for ${chosenDom} on ashwindelaycheck!`, 'warn');
+
+        // HTML5 Notification
+        if (alertConfig.browserPush && 'Notification' in window && Notification.permission === 'granted') {
+          new Notification(`🚨 SPAM: ${et}`, {
+            body: `Domain: ${chosenDom}\nSeed: ashwindelaycheck`,
+            tag: 'spam_detected'
+          });
+        }
+
+        // Mobile ntfy Push
+        if (alertConfig.mobilePush && alertConfig.ntfyTopic) {
+          fetch(`https://ntfy.sh/${alertConfig.ntfyTopic}`, {
+            method: 'POST',
+            body: `Spam placement on ${chosenDom} (${et})`,
+            headers: { 'Title': '🚨 Deliverability Alert', 'Priority': 'urgent' }
+          }).catch(() => {});
+        }
+
+        // In-App Toast
+        toastSpamEt.textContent = et;
+        toastSpamDom.textContent = chosenDom;
+        toastSpamAcc.textContent = 'ashwindelaycheck';
+        spamAlertToast.style.display = 'block';
+        setTimeout(() => { spamAlertToast.style.display = 'none'; }, 7000);
+      }
+
+      // --- EVENT HANDLERS & NAVIGATION ---
+      // Tabs
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tab = btn.getAttribute('data-tab');
+          if (tab === 'live') {
+            activateTab('live');
+          } else {
+            if (isAdminUnlocked) {
+              activateTab(tab);
+            } else {
+              pendingLockedTab = tab;
+              modalPassword.classList.add('active');
+              inputPassword.value = '';
+              passwordError.style.display = 'none';
+              setTimeout(() => inputPassword.focus(), 50);
+            }
+          }
+        });
+      });
+
+      function activateTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+
+        const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        const activeContent = document.getElementById(`tab-${tabId}`);
+        if (activeContent) activeContent.style.display = 'block';
+      }
+
+      // Admin Lock / Unlock
+      btnLockToggle.addEventListener('click', () => {
+        if (isAdminUnlocked) {
+          isAdminUnlocked = false;
+          lockIconEl.textContent = '🔒';
+          lockLabelEl.textContent = 'Admin Locked';
+          btnLockToggle.style.color = 'var(--text-main)';
+          document.querySelectorAll('.tab-lock-indicator').forEach(el => el.textContent = '🔒');
+          activateTab('live');
+          showToast('Admin locked');
+        } else {
+          pendingLockedTab = null;
+          modalPassword.classList.add('active');
+          inputPassword.value = '';
+          passwordError.style.display = 'none';
+          setTimeout(() => inputPassword.focus(), 50);
+        }
+      });
+
+      document.getElementById('btn-submit-pass').addEventListener('click', verifyPasscode);
+      inputPassword.addEventListener('keydown', e => { if (e.key === 'Enter') verifyPasscode(); });
+
+      function verifyPasscode() {
+        if (inputPassword.value === DEFAULT_ADMIN_PASS) {
+          isAdminUnlocked = true;
+          lockIconEl.textContent = '🔓';
+          lockLabelEl.textContent = 'Admin Unlocked';
+          btnLockToggle.style.color = 'var(--emerald-600)';
+          document.querySelectorAll('.tab-lock-indicator').forEach(el => el.textContent = '🔓');
+          modalPassword.classList.remove('active');
+          showToast('Admin unlocked');
+          if (pendingLockedTab) {
+            activateTab(pendingLockedTab);
+            pendingLockedTab = null;
+          }
+        } else {
+          passwordError.style.display = 'block';
+        }
+      }
+
+      // Pause / Resume
+      btnPauseResume.addEventListener('click', () => {
+        isTimerPaused = !isTimerPaused;
+        if (isTimerPaused) {
+          timerIconEl.textContent = '▶';
+          timerLabelEl.textContent = 'Resume';
+          countdownTextEl.textContent = 'Paused';
+        } else {
+          timerIconEl.textContent = '⏸';
+          timerLabelEl.textContent = 'Pause';
+          countdownTextEl.textContent = 'Syncing';
+        }
+      });
+
+      // Sync Controls
+      btnSyncNow.addEventListener('click', () => {
+        countdown = 30;
+        currentScope = 'TODAY';
+        badgeActiveScopeEl.textContent = "📅 Today's Mail";
+        badgeActiveScopeEl.className = 'badge badge-indigo';
+        kpiScopeTitleEl.textContent = "Today's Mails";
+        performPollingCycle();
+        showToast('Sync completed');
+      });
+
+      btnScopeYesterday.addEventListener('click', () => {
+        currentScope = currentScope === 'TODAY' ? 'YESTERDAY' : 'TODAY';
+        if (currentScope === 'YESTERDAY') {
+          badgeActiveScopeEl.textContent = "⏪ Yesterday's Mail";
+          badgeActiveScopeEl.className = 'badge badge-violet';
+          kpiScopeTitleEl.textContent = "Yesterday's Mails";
+          btnScopeYesterday.classList.add('btn-primary');
+        } else {
+          badgeActiveScopeEl.textContent = "📅 Today's Mail";
+          badgeActiveScopeEl.className = 'badge badge-indigo';
+          kpiScopeTitleEl.textContent = "Today's Mails";
+          btnScopeYesterday.classList.remove('btn-primary');
+        }
+        generateDemoRecords();
+        updateDashboard();
+        showToast(`Switched scope to ${currentScope}`);
+      });
+
+      document.getElementById('btn-simulate-event').addEventListener('click', simulateSpamArrival);
+      document.getElementById('btn-close-spam-alert').addEventListener('click', () => {
+        spamAlertToast.style.display = 'none';
+      });
+
+      // Filter Inputs
+      filterSearchInput.addEventListener('input', updateDashboard);
+      filterEtSelect.addEventListener('change', updateDashboard);
+      filterPlacementSelect.addEventListener('change', updateDashboard);
+      sidebarEtSearchInput.addEventListener('input', renderETSidebar);
+
+      // Export CSV
+      btnExportCsv.addEventListener('click', () => {
+        const visible = getFilteredRecords();
+        if (visible.length === 0) {
+          showToast('No records to export');
+          return;
+        }
+        const headers = ['Domain', 'Universal ET', 'Date', 'ashwindelaycheck', 'kartikdelaycheck', 'newnonop5', 'ashwinkartiknonop1710'];
+        const rows = visible.map(u => [
+          `"${u.domain}"`,
+          `"${u.etName}"`,
+          `"${u.date}"`,
+          `"${u.placements.ashwindelaycheck || 'UNKNOWN'}"`,
+          `"${u.placements.kartikdelaycheck || 'UNKNOWN'}"`,
+          `"${u.placements.newnonop5 || 'UNKNOWN'}"`,
+          `"${u.placements.ashwinkartiknonop1710 || 'UNKNOWN'}"`
+        ]);
+
+        const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', `deliverability_export_${currentScope.toLowerCase()}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        log(`Exported CSV with ${visible.length} domain units.`, 'info');
+      });
+
+      // Quick Paste Modals
+      document.getElementById('btn-paste-sheet1').addEventListener('click', () => {
+        activePasteTarget = 'sheet1';
+        pasteModalTitle.textContent = 'Quick Paste: Sheet1';
+        pasteTextarea.value = '';
+        modalPaste.classList.add('active');
+      });
+
+      document.getElementById('btn-paste-reused').addEventListener('click', () => {
+        activePasteTarget = 'reused';
+        pasteModalTitle.textContent = 'Quick Paste: Reused Domains';
+        pasteTextarea.value = '';
+        modalPaste.classList.add('active');
+      });
+
+      document.getElementById('btn-apply-paste').addEventListener('click', () => {
+        const text = pasteTextarea.value.trim();
+        const parsed = parseDelimitedData(text);
+        if (parsed.length > 0) {
+          const targetMap = activePasteTarget === 'sheet1' ? sheet1Map : reusedMap;
+          targetMap.clear();
+          parsed.forEach(p => targetMap.set(p.domain, { etName: p.etName, dateStr: p.dateStr }));
+          renderSheetTables();
+          updateDashboard();
+          modalPaste.classList.remove('active');
+          showToast(`Imported ${parsed.length} mappings`);
+          log(`Pasted and applied ${parsed.length} mappings into ${activePasteTarget}.`, 'success');
+        } else {
+          showToast('Could not find valid domain rows.');
+        }
+      });
+
+      // Sync URL Buttons
+      document.getElementById('btn-fetch-sheet1').addEventListener('click', () => syncUrl('sheet1'));
+      document.getElementById('btn-fetch-reused').addEventListener('click', () => syncUrl('reused'));
+
+      // Clear Logs
+      document.getElementById('btn-clear-logs').addEventListener('click', () => {
+        terminalContainer.innerHTML = '';
+        log('Diagnostic logs cleared.', 'info');
+      });
+
+      // Modal Closers
+      document.querySelectorAll('.btn-close-modal').forEach(b => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+        });
+      });
+
+      // Alerts Modal
+      document.getElementById('btn-open-alerts').addEventListener('click', () => {
+        modalAlerts.classList.add('active');
+      });
+
+      document.getElementById('btn-save-alerts').addEventListener('click', () => {
+        alertConfig.browserPush = document.getElementById('cfg-browser-push').checked;
+        alertConfig.audio = document.getElementById('cfg-audio').checked;
+        alertConfig.mobilePush = document.getElementById('cfg-mobile-push').checked;
+        alertConfig.ntfyTopic = document.getElementById('cfg-ntfy-topic').value.trim();
+
+        if (alertConfig.browserPush && 'Notification' in window && Notification.permission === 'default') {
+          Notification.requestPermission();
+        }
+
+        modalAlerts.classList.remove('active');
+        showToast('Alert preferences saved');
+      });
+
+      document.getElementById('btn-test-alert').addEventListener('click', () => {
+        triggerSirenSound();
+        showToast('Playing siren sound...');
+      });
+
+      // --- CANVAS BACKGROUND ANIMATION ---
+      function initAmbientBackground() {
+        const canvas = document.getElementById('ambient-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const dots = [];
+        const count = width < 768 ? 16 : 28;
+
+        for (let i = 0; i < count; i++) {
+          dots.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            r: Math.random() * 1.5 + 1,
+            speedY: Math.random() * 0.3 + 0.15,
+            speedX: (Math.random() - 0.5) * 0.2,
+            opacity: Math.random() * 0.25 + 0.05
+          });
+        }
+
+        window.addEventListener('resize', () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        });
+
+        function render() {
+          ctx.clearRect(0, 0, width, height);
+          for (let i = 0; i < dots.length; i++) {
+            const d = dots[i];
+            ctx.beginPath();
+            ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(148, 163, 184, ${d.opacity})`;
+            ctx.fill();
+
+            d.y += d.speedY;
+            d.x += d.speedX;
+
+            if (d.y > height) { d.y = -5; d.x = Math.random() * width; }
+            if (d.x > width) d.x = 0;
+            if (d.x < 0) d.x = width;
+          }
+          requestAnimationFrame(render);
+        }
+        render();
+      }
+
+      // --- BOOTSTRAP ---
+      window.addEventListener('DOMContentLoaded', () => {
+        initAmbientBackground();
+        populateInitialMappings();
+        generateDemoRecords();
+        updateDashboard();
+        startCountdownTimer();
+        log('Monitoring engine initialized in Client Demo Mode.', 'success');
+      });
+
+    })();
+  </script>
+</body>
+</html>
