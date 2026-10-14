@@ -606,15 +606,15 @@
           <span>Live Monitor</span>
           <span id="badge-records-total" class="badge badge-indigo">0</span>
         </button>
-        <button class="tab-btn" data-tab="sheet1">
+        <button class="tab-btn" data-tab="bond">
           <span class="tab-lock-indicator">🔒</span>
-          <span>Sheet1 Cache</span>
-          <span id="badge-sheet1-count" class="badge badge-slate">0</span>
+          <span>BOND</span>
+          <span id="badge-bond-count" class="badge badge-slate">0</span>
         </button>
-        <button class="tab-btn" data-tab="reused">
+        <button class="tab-btn" data-tab="domain-types">
           <span class="tab-lock-indicator">🔒</span>
-          <span>Reused Domains</span>
-          <span id="badge-reused-count" class="badge badge-slate">0</span>
+          <span>DOMAIN TYPES</span>
+          <span id="badge-domain-types-count" class="badge badge-slate">0</span>
         </button>
         <button class="tab-btn" data-tab="logs">
           <span class="tab-lock-indicator">🔒</span>
@@ -706,9 +706,9 @@
       <div class="panel-card" style="padding: 0.75rem 1rem; margin-bottom: 1rem;">
         <div style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; justify-content:space-between;">
           <div style="display:flex; flex-wrap:wrap; gap:0.5rem; flex:1; min-width:280px;">
-            <input id="filter-search" type="text" placeholder="Search domain, Universal ET, subject..." class="input-text" style="flex:2; min-width:180px;">
+            <input id="filter-search" type="text" placeholder="Search domain, ET name, subject..." class="input-text" style="flex:2; min-width:180px;">
             <select id="filter-et" class="select-input" style="flex:1; min-width:140px;">
-              <option value="ALL">All Universal ETs</option>
+              <option value="ALL">All ET Names</option>
               <option value="MAPPED">Mapped Only</option>
               <option value="UNMAPPED">Unmapped Only</option>
             </select>
@@ -731,11 +731,11 @@
         <!-- Universal ET Directory -->
         <aside class="panel-card" style="max-height: calc(100vh - 280px); display:flex; flex-direction:column;">
           <div style="padding:0.75rem 1rem; border-bottom:1px solid var(--border-color); background:#fafafa; display:flex; align-items:center; justify-content:space-between;">
-            <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">Universal ETs</div>
+            <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">ET Name Directory</div>
             <span id="sidebar-et-badge" class="badge badge-indigo">0</span>
           </div>
           <div style="padding:0.5rem; border-bottom:1px solid var(--border-color);">
-            <input id="sidebar-et-search" type="text" placeholder="Filter ETs..." class="input-text" style="height:1.9rem; font-size:0.7rem;">
+            <input id="sidebar-et-search" type="text" placeholder="Filter ET Names..." class="input-text" style="height:1.9rem; font-size:0.7rem;">
           </div>
           <div id="sidebar-et-list" style="overflow-y:auto; flex:1; padding:0.25rem 0;">
             <div style="padding: 1.5rem; text-align: center; color: var(--text-light); font-size: 0.75rem;">Loading ET Directory...</div>
@@ -785,29 +785,29 @@
       </div>
     </div>
 
-    <!-- TAB 2: SHEET 1 CACHE -->
-    <div id="tab-sheet1" class="tab-content" style="display:none; margin-bottom: 3rem;">
+    <!-- TAB 2: BOND -->
+    <div id="tab-bond" class="tab-content" style="display:none; margin-bottom: 3rem;">
       <div class="panel-card" style="padding: 1.25rem; margin-bottom: 1rem;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
           <div>
-            <h3 style="font-size:0.9rem; font-weight:700;">Sheet1 Mapping Cache</h3>
+            <h3 style="font-size:0.9rem; font-weight:700;">BOND Mapping Cache</h3>
             <p style="font-size:0.7rem; color:var(--text-muted);">Primary Google Sheet source with automatic cross-origin and CSV parsing fallbacks.</p>
           </div>
           <div style="display:flex; gap:0.5rem;">
-            <button id="btn-paste-sheet1" class="btn">📋 Quick Paste</button>
-            <button id="btn-fetch-sheet1" class="btn btn-primary">Sync URL</button>
+            <button id="btn-paste-bond" class="btn">📋 Quick Paste</button>
+            <button id="btn-fetch-bond" class="btn btn-primary">Sync URL</button>
           </div>
         </div>
-        <input id="input-sheet1-url" type="text" class="input-text font-mono" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vTjA8aNW5lpl6B2zqdR3CtMdVEv_hCkfkwWbyWIkZAc3tbQxgxE67g6jO5QkLftCZL_nBSPSDtHMmud/pub?gid=0&amp;single=true&amp;output=csv">
+        <input id="input-bond-url" type="text" class="input-text font-mono" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vTjA8aNW5lpl6B2zqdR3CtMdVEv_hCkfkwWbyWIkZAc3tbQxgxE67g6jO5QkLftCZL_nBSPSDtHMmud/pub?gid=0&amp;single=true&amp;output=csv">
         <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-top:0.5rem;">
-          <span>Status: <strong id="status-sheet1-text" class="text-main">Ready</strong></span>
-          <span id="time-sheet1-synced">Never synced</span>
+          <span>Status: <strong id="status-bond-text" class="text-main">Ready</strong></span>
+          <span id="time-bond-synced">Never synced</span>
         </div>
       </div>
 
       <div class="panel-card">
         <div style="padding:0.75rem 1rem; background:#fafafa; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:0.75rem; font-weight:700;">Cached Records (<span id="table-sheet1-count">0</span>)</span>
+          <span style="font-size:0.75rem; font-weight:700;">Cached Records (<span id="table-bond-count">0</span>)</span>
           <span class="badge badge-amber">Today &amp; Yesterday Filter Active</span>
         </div>
         <div style="max-height: 400px; overflow-y:auto;">
@@ -815,11 +815,11 @@
             <thead style="background:#f1f5f9; position:sticky; top:0; z-index:5;">
               <tr>
                 <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Domain</th>
-                <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Universal ET</th>
+                <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">ET Name</th>
                 <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Date</th>
               </tr>
             </thead>
-            <tbody id="tbody-sheet1">
+            <tbody id="tbody-bond">
               <tr><td colspan="3" style="text-align:center; padding:2rem; color:var(--text-light);">No cached data loaded.</td></tr>
             </tbody>
           </table>
@@ -827,29 +827,29 @@
       </div>
     </div>
 
-    <!-- TAB 3: REUSED DOMAINS -->
-    <div id="tab-reused" class="tab-content" style="display:none; margin-bottom: 3rem;">
+    <!-- TAB 3: DOMAIN TYPES -->
+    <div id="tab-domain-types" class="tab-content" style="display:none; margin-bottom: 3rem;">
       <div class="panel-card" style="padding: 1.25rem; margin-bottom: 1rem;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
           <div>
-            <h3 style="font-size:0.9rem; font-weight:700;">Reused Domains Secondary Cache</h3>
-            <p style="font-size:0.7rem; color:var(--text-muted);">Secondary mappings cache for reused campaigns.</p>
+            <h3 style="font-size:0.9rem; font-weight:700;">DOMAIN TYPES Secondary Cache</h3>
+            <p style="font-size:0.7rem; color:var(--text-muted);">Secondary mappings cache for reused campaigns and domain categories.</p>
           </div>
           <div style="display:flex; gap:0.5rem;">
-            <button id="btn-paste-reused" class="btn">📋 Quick Paste</button>
-            <button id="btn-fetch-reused" class="btn btn-violet">Sync URL</button>
+            <button id="btn-paste-domain-types" class="btn">📋 Quick Paste</button>
+            <button id="btn-fetch-domain-types" class="btn btn-violet">Sync URL</button>
           </div>
         </div>
-        <input id="input-reused-url" type="text" class="input-text font-mono" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vTjA8aNW5lpl6B2zqdR3CtMdVEv_hCkfkwWbyWIkZAc3tbQxgxE67g6jO5QkLftCZL_nBSPSDtHMmud/pub?gid=1798344486&amp;single=true&amp;output=csv">
+        <input id="input-domain-types-url" type="text" class="input-text font-mono" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vTjA8aNW5lpl6B2zqdR3CtMdVEv_hCkfkwWbyWIkZAc3tbQxgxE67g6jO5QkLftCZL_nBSPSDtHMmud/pub?gid=1798344486&amp;single=true&amp;output=csv">
         <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-top:0.5rem;">
-          <span>Status: <strong id="status-reused-text" class="text-main">Ready</strong></span>
-          <span id="time-reused-synced">Never synced</span>
+          <span>Status: <strong id="status-domain-types-text" class="text-main">Ready</strong></span>
+          <span id="time-domain-types-synced">Never synced</span>
         </div>
       </div>
 
       <div class="panel-card">
         <div style="padding:0.75rem 1rem; background:#fafafa; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:0.75rem; font-weight:700;">Cached Records (<span id="table-reused-count">0</span>)</span>
+          <span style="font-size:0.75rem; font-weight:700;">Cached Records (<span id="table-domain-types-count">0</span>)</span>
           <span class="badge badge-amber">Today &amp; Yesterday Filter Active</span>
         </div>
         <div style="max-height: 400px; overflow-y:auto;">
@@ -857,11 +857,11 @@
             <thead style="background:#f1f5f9; position:sticky; top:0; z-index:5;">
               <tr>
                 <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Domain</th>
-                <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Universal ET</th>
+                <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">ET Name</th>
                 <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Date</th>
               </tr>
             </thead>
-            <tbody id="tbody-reused">
+            <tbody id="tbody-domain-types">
               <tr><td colspan="3" style="text-align:center; padding:2rem; color:var(--text-light);">No cached data loaded.</td></tr>
             </tbody>
           </table>
@@ -935,7 +935,7 @@
         <button class="btn-close-modal" style="background:none; border:none; font-size:1.1rem; cursor:pointer; color:var(--text-muted);">✕</button>
       </div>
       <p style="font-size:0.7rem; color:var(--text-muted); margin-bottom:0.5rem;">
-        Paste tabular rows with headers: <code>Domains</code>, <code>Universal ET Name</code>, <code>Date</code>
+        Paste tabular rows with headers: <code>DOMAIN</code>, <code>ET NAME</code>, <code>DATE</code>
       </p>
       <textarea id="paste-textarea" rows="7" style="width:100%; border:1px solid var(--border-color); border-radius:0.5rem; padding:0.5rem; font-family:var(--font-mono); font-size:0.7rem; outline:none;" placeholder="domain.com,CAMPAIGN_A,2026-10-14&#10;example.org,CAMPAIGN_B,2026-10-13"></textarea>
       <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:0.75rem;">
@@ -1023,8 +1023,8 @@
       // Cache & State
       const tokenCache = {};
       const messageDetailCache = new Map();
-      const sheet1Map = new Map();
-      const reusedMap = new Map();
+      const bondMap = new Map();
+      const domainTypesMap = new Map();
       let emailRecords = [];
 
       let currentScope = 'TODAY'; // 'TODAY' or 'YESTERDAY'
@@ -1032,7 +1032,7 @@
       let isSyncInProgress = false;
       let countdown = 30;
       let countdownTimer = null;
-      let activePasteTarget = 'sheet1';
+      let activePasteTarget = 'bond';
       let selectedDonutCategory = 'ALL';
 
       const alertConfig = {
@@ -1160,7 +1160,7 @@
         localStorage.setItem('notified_spam_ids_prod', JSON.stringify(Array.from(notifiedSpamIds)));
 
         triggerSirenSound();
-        log(`[SPAM ALERT] ${rec.domain} landed in SPAM on ${seedName}! Universal ET: ${rec.etName}`, 'error');
+        log(`[SPAM ALERT] ${rec.domain} landed in SPAM on ${seedName}! ET Name: ${rec.etName}`, 'error');
 
         if (alertConfig.browserPush && 'Notification' in window && Notification.permission === 'granted') {
           try {
@@ -1214,14 +1214,14 @@
 
       function resolveEtName(domain) {
         const d = normalizeDomain(domain);
-        if (sheet1Map.has(d)) return sheet1Map.get(d).etName;
-        if (reusedMap.has(d)) return reusedMap.get(d).etName;
+        if (bondMap.has(d)) return bondMap.get(d).etName;
+        if (domainTypesMap.has(d)) return domainTypesMap.get(d).etName;
 
         const parts = d.split('.');
         if (parts.length > 2) {
           const root = parts.slice(-2).join('.');
-          if (sheet1Map.has(root)) return sheet1Map.get(root).etName;
-          if (reusedMap.has(root)) return reusedMap.get(root).etName;
+          if (bondMap.has(root)) return bondMap.get(root).etName;
+          if (domainTypesMap.has(root)) return domainTypesMap.get(root).etName;
         }
         return 'Unmapped';
       }
@@ -1245,25 +1245,29 @@
         return parsed >= yesterdayStart && parsed <= endOfToday;
       }
 
+      // --- CSV / TSV PARSER (TARGETING 'DATE' & 'ET NAME' & 'DOMAIN') ---
       function parseDelimitedData(text) {
         const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
         if (lines.length < 2) return [];
         const result = [];
         const delimiter = lines[0].includes('\t') ? '\t' : ',';
-        const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase());
+        const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase().replace(/^["']|["']$/g, ''));
 
-        let domIdx = headers.findIndex(h => h.includes('domain'));
-        let etIdx = headers.findIndex(h => h.includes('et') || h.includes('name'));
-        let dateIdx = headers.findIndex(h => h.includes('date'));
+        // Identify indices for DOMAIN, ET NAME, and DATE dynamically
+        let domIdx = headers.findIndex(h => h === 'domain' || h === 'domains' || h.includes('domain'));
+        let etIdx = headers.findIndex(h => h === 'et name' || h === 'et_name' || h === 'universal et' || h === 'et' || h.includes('et name'));
+        let dateIdx = headers.findIndex(h => h === 'date' || h.includes('date'));
 
         if (domIdx === -1) domIdx = 0;
+        if (etIdx === -1) etIdx = headers.findIndex(h => h.includes('et') || h.includes('name'));
         if (etIdx === -1) etIdx = 1;
+        if (dateIdx === -1) dateIdx = 2;
 
         for (let i = 1; i < lines.length; i++) {
           const cols = lines[i].split(delimiter).map(c => c.trim().replace(/^"|"$/g, ''));
           const dom = normalizeDomain(cols[domIdx]);
           const rawEt = cols[etIdx] || '';
-          const dateStr = dateIdx !== -1 ? (cols[dateIdx] || '') : '';
+          const dateStr = dateIdx !== -1 && dateIdx < cols.length ? (cols[dateIdx] || '') : '';
 
           if (dom && !dom.includes('domain') && isDateTodayOrYesterday(dateStr)) {
             result.push({ domain: dom, etName: toUniversalET(rawEt), dateStr });
@@ -1375,7 +1379,6 @@
         const retrievedRecords = [];
         const toFetch = summaries.filter(s => !messageDetailCache.has(`${acc.id}_${s.id}`));
 
-        // Retrieve cached messages first
         summaries.forEach(s => {
           const cacheKey = `${acc.id}_${s.id}`;
           if (messageDetailCache.has(cacheKey)) {
@@ -1386,7 +1389,6 @@
           }
         });
 
-        // Fetch details for new messages concurrently (batch size: 20)
         const BATCH_SIZE = 20;
         for (let i = 0; i < toFetch.length; i += BATCH_SIZE) {
           const chunk = toFetch.slice(i, i + BATCH_SIZE);
@@ -1464,7 +1466,6 @@
           const results = await Promise.all(SEED_ACCOUNTS.map(acc => fetchMailboxMessages(acc, scope)));
           const flatList = results.flat();
 
-          // Aggregate by domain into Unique Units
           const domainMap = new Map();
           flatList.forEach(item => {
             const normDom = normalizeDomain(item.domain);
@@ -1485,13 +1486,11 @@
               unit.subject = item.subject;
             }
 
-            // Assign status for this account (INBOX takes precedence if duplicate exists)
             if (!unit.placements[item.accountName] || item.folder === 'SPAM' || (item.folder === 'INBOX' && unit.placements[item.accountName] !== 'INBOX')) {
               unit.placements[item.accountName] = item.folder;
             }
           });
 
-          // Fill default NONE for accounts that didn't receive mail
           domainMap.forEach(unit => {
             SEED_ACCOUNTS.forEach(acc => {
               if (!unit.placements[acc.name]) {
@@ -1590,7 +1589,7 @@
         kpiSpamPct.textContent = `${spPct}%`;
         kpiSpamFill.style.width = `${spPct}%`;
 
-        const totalCached = new Set([...sheet1Map.keys(), ...reusedMap.keys()]).size;
+        const totalCached = new Set([...bondMap.keys(), ...domainTypesMap.keys()]).size;
         kpiDomainsVal.textContent = totalCached;
         kpiMappedBadge.textContent = `${mappedCount} Mapped`;
 
@@ -1696,7 +1695,7 @@
 
         let html = `
           <div onclick="selectETFilter('ALL')" style="padding:0.45rem 1rem; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-size:0.75rem; font-weight:600; border-left:3px solid ${filterEtSelect.value === 'ALL' ? 'var(--indigo-600)' : 'transparent'}; background:${filterEtSelect.value === 'ALL' ? 'var(--indigo-50)' : 'transparent'};">
-            <span>🌟 All Universal ETs</span>
+            <span>🌟 All ET Names</span>
             <span class="badge badge-slate">${emailRecords.length}</span>
           </div>
           <div onclick="selectETFilter('MAPPED')" style="padding:0.45rem 1rem; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-size:0.75rem; font-weight:600; border-left:3px solid ${filterEtSelect.value === 'MAPPED' ? 'var(--indigo-600)' : 'transparent'}; background:${filterEtSelect.value === 'MAPPED' ? 'var(--indigo-50)' : 'transparent'};">
@@ -1733,7 +1732,7 @@
 
         const currentVal = filterEtSelect.value;
         filterEtSelect.innerHTML = `
-          <option value="ALL">All Universal ETs</option>
+          <option value="ALL">All ET Names</option>
           <option value="MAPPED">Mapped Only</option>
           <option value="UNMAPPED">Unmapped Only</option>
           ${sortedETs.length > 0 ? `<optgroup label="Campaigns">${sortedETs.map(et => `<option value="${escapeHtml(et)}">${escapeHtml(et)}</option>`).join('')}</optgroup>` : ''}
@@ -1853,17 +1852,17 @@
 
       // --- SHEET CACHE TABLES ---
       function renderSheetTables() {
-        const tbody1 = document.getElementById('tbody-sheet1');
-        const tbody2 = document.getElementById('tbody-reused');
-        document.getElementById('table-sheet1-count').textContent = sheet1Map.size;
-        document.getElementById('badge-sheet1-count').textContent = sheet1Map.size;
-        document.getElementById('table-reused-count').textContent = reusedMap.size;
-        document.getElementById('badge-reused-count').textContent = reusedMap.size;
+        const tbody1 = document.getElementById('tbody-bond');
+        const tbody2 = document.getElementById('tbody-domain-types');
+        document.getElementById('table-bond-count').textContent = bondMap.size;
+        document.getElementById('badge-bond-count').textContent = bondMap.size;
+        document.getElementById('table-domain-types-count').textContent = domainTypesMap.size;
+        document.getElementById('badge-domain-types-count').textContent = domainTypesMap.size;
 
-        if (sheet1Map.size === 0) {
+        if (bondMap.size === 0) {
           tbody1.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:2rem; color:var(--text-light);">No cached data.</td></tr>';
         } else {
-          tbody1.innerHTML = Array.from(sheet1Map.entries()).map(([dom, val]) => `
+          tbody1.innerHTML = Array.from(bondMap.entries()).map(([dom, val]) => `
             <tr style="border-bottom:1px solid #f1f5f9;">
               <td style="padding:0.4rem 1rem;" class="font-mono">${escapeHtml(dom)}</td>
               <td style="padding:0.4rem 1rem; font-weight:600; color:var(--indigo-600);">${escapeHtml(val.etName)}</td>
@@ -1872,10 +1871,10 @@
           `).join('');
         }
 
-        if (reusedMap.size === 0) {
+        if (domainTypesMap.size === 0) {
           tbody2.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:2rem; color:var(--text-light);">No cached data.</td></tr>';
         } else {
-          tbody2.innerHTML = Array.from(reusedMap.entries()).map(([dom, val]) => `
+          tbody2.innerHTML = Array.from(domainTypesMap.entries()).map(([dom, val]) => `
             <tr style="border-bottom:1px solid #f1f5f9;">
               <td style="padding:0.4rem 1rem;" class="font-mono">${escapeHtml(dom)}</td>
               <td style="padding:0.4rem 1rem; font-weight:600; color:var(--violet-600);">${escapeHtml(val.etName)}</td>
@@ -1886,14 +1885,14 @@
       }
 
       async function syncUrl(targetKey) {
-        const isSheet1 = targetKey === 'sheet1';
-        const inputEl = document.getElementById(isSheet1 ? 'input-sheet1-url' : 'input-reused-url');
-        const statusEl = document.getElementById(isSheet1 ? 'status-sheet1-text' : 'status-reused-text');
-        const timeEl = document.getElementById(isSheet1 ? 'time-sheet1-synced' : 'time-reused-synced');
+        const isBond = targetKey === 'bond';
+        const inputEl = document.getElementById(isBond ? 'input-bond-url' : 'input-domain-types-url');
+        const statusEl = document.getElementById(isBond ? 'status-bond-text' : 'status-domain-types-text');
+        const timeEl = document.getElementById(isBond ? 'time-bond-synced' : 'time-domain-types-synced');
         const targetUrl = inputEl.value.trim();
 
         statusEl.textContent = 'Syncing...';
-        log(`Syncing ${isSheet1 ? 'Sheet1' : 'Reused Domains'} via CSV URL...`, 'info');
+        log(`Syncing ${isBond ? 'BOND' : 'DOMAIN TYPES'} via CSV URL...`, 'info');
 
         try {
           let text = '';
@@ -1907,7 +1906,7 @@
 
           if (text && text.length > 20 && !text.includes('<!DOCTYPE html>')) {
             const parsed = parseDelimitedData(text);
-            const targetMap = isSheet1 ? sheet1Map : reusedMap;
+            const targetMap = isBond ? bondMap : domainTypesMap;
             targetMap.clear();
             parsed.forEach(item => targetMap.set(item.domain, { etName: item.etName, dateStr: item.dateStr }));
 
@@ -1921,7 +1920,7 @@
             });
 
             updateDashboard();
-            log(`Synced ${parsed.length} entries for ${isSheet1 ? 'Sheet1' : 'Reused Domains'}.`, 'success');
+            log(`Synced ${parsed.length} entries for ${isBond ? 'BOND' : 'DOMAIN TYPES'}.`, 'success');
             showToast(`Loaded ${parsed.length} mappings`);
           } else {
             throw new Error('Empty or non-CSV payload.');
@@ -2069,7 +2068,7 @@
           showToast('No records to export');
           return;
         }
-        const headers = ['Domain', 'Universal ET', 'Latest Time', ...SEED_ACCOUNTS.map(a => a.name)];
+        const headers = ['Domain', 'ET Name', 'Latest Time', ...SEED_ACCOUNTS.map(a => a.name)];
         const rows = visible.map(u => [
           `"${u.domain}"`,
           `"${u.etName}"`,
@@ -2087,16 +2086,16 @@
         log(`Exported CSV report with ${visible.length} records.`, 'info');
       });
 
-      document.getElementById('btn-paste-sheet1').addEventListener('click', () => {
-        activePasteTarget = 'sheet1';
-        pasteModalTitle.textContent = 'Quick Paste: Sheet1';
+      document.getElementById('btn-paste-bond').addEventListener('click', () => {
+        activePasteTarget = 'bond';
+        pasteModalTitle.textContent = 'Quick Paste: BOND';
         pasteTextarea.value = '';
         modalPaste.classList.add('active');
       });
 
-      document.getElementById('btn-paste-reused').addEventListener('click', () => {
-        activePasteTarget = 'reused';
-        pasteModalTitle.textContent = 'Quick Paste: Reused Domains';
+      document.getElementById('btn-paste-domain-types').addEventListener('click', () => {
+        activePasteTarget = 'domain-types';
+        pasteModalTitle.textContent = 'Quick Paste: DOMAIN TYPES';
         pasteTextarea.value = '';
         modalPaste.classList.add('active');
       });
@@ -2105,7 +2104,7 @@
         const text = pasteTextarea.value.trim();
         const parsed = parseDelimitedData(text);
         if (parsed.length > 0) {
-          const targetMap = activePasteTarget === 'sheet1' ? sheet1Map : reusedMap;
+          const targetMap = activePasteTarget === 'bond' ? bondMap : domainTypesMap;
           targetMap.clear();
           parsed.forEach(p => targetMap.set(p.domain, { etName: p.etName, dateStr: p.dateStr }));
           renderSheetTables();
@@ -2124,8 +2123,8 @@
         }
       });
 
-      document.getElementById('btn-fetch-sheet1').addEventListener('click', () => syncUrl('sheet1'));
-      document.getElementById('btn-fetch-reused').addEventListener('click', () => syncUrl('reused'));
+      document.getElementById('btn-fetch-bond').addEventListener('click', () => syncUrl('bond'));
+      document.getElementById('btn-fetch-domain-types').addEventListener('click', () => syncUrl('domain-types'));
 
       document.getElementById('btn-clear-logs').addEventListener('click', () => {
         terminalContainer.innerHTML = '';
@@ -2220,9 +2219,9 @@
         startCountdownTimer();
         log('Production Monitor initialized. Polling Google Sheets & Gmail API...', 'info');
 
-        // Initial sync of both mapping sheets, followed by a live mailbox poll
-        syncUrl('sheet1').then(() => {
-          syncUrl('reused').then(() => {
+        // Initial sync of both mapping sheets (BOND & DOMAIN TYPES), followed by a live mailbox poll
+        syncUrl('bond').then(() => {
+          syncUrl('domain-types').then(() => {
             executeLivePoll('TODAY');
           });
         });
