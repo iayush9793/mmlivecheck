@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Deliverability & Inbox Pulse | Real-Time Monitor</title>
+  <title>Deliverability &amp; Inbox Pulse | Production Monitor</title>
 
   <!-- Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
-    /* Reset & Base Variables */
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
@@ -78,9 +77,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    code, pre, .font-mono {
-      font-family: var(--font-mono);
-    }
+    code, pre, .font-mono { font-family: var(--font-mono); }
 
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f8fafc; }
@@ -102,7 +99,7 @@
     }
     .donut-segment:hover {
       stroke-width: 26;
-      opacity: 0.9;
+      opacity: 0.92;
     }
 
     #ambient-canvas {
@@ -116,8 +113,8 @@
     }
 
     header {
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
@@ -239,10 +236,10 @@
     .btn-amber:hover { background: var(--amber-100); }
 
     .nav-bar {
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.88);
       border-bottom: 1px solid var(--border-color);
       position: sticky;
-      top: 5rem;
+      top: 5.1rem;
       z-index: 30;
       backdrop-filter: blur(8px);
     }
@@ -342,21 +339,13 @@
     }
 
     @media (max-width: 1200px) {
-      .dashboard-layout {
-        grid-template-columns: 260px 1fr;
-      }
-      .right-column {
-        grid-column: span 2;
-      }
+      .dashboard-layout { grid-template-columns: 260px 1fr; }
+      .right-column { grid-column: span 2; }
     }
 
     @media (max-width: 900px) {
-      .dashboard-layout {
-        grid-template-columns: 1fr;
-      }
-      .right-column {
-        grid-column: span 1;
-      }
+      .dashboard-layout { grid-template-columns: 1fr; }
+      .right-column { grid-column: span 1; }
       .nav-bar { top: 0; }
     }
 
@@ -401,7 +390,7 @@
       box-shadow: 0 3px 8px rgba(0,0,0,0.04);
     }
     .domain-card.has-spam {
-      border-color: var(--rose-200);
+      border-color: var(--rose-300);
       box-shadow: 0 2px 6px rgba(244, 63, 94, 0.08);
     }
     .domain-card-header {
@@ -429,8 +418,8 @@
       flex-direction: column;
       gap: 0.15rem;
     }
-    .account-pill.inbox { border-color: var(--emerald-200); background: var(--emerald-50); }
-    .account-pill.spam { border-color: var(--rose-200); background: var(--rose-50); }
+    .account-pill.inbox { border-color: var(--emerald-300); background: var(--emerald-50); }
+    .account-pill.spam { border-color: var(--rose-300); background: var(--rose-50); }
 
     .modal-overlay {
       position: fixed;
@@ -526,14 +515,19 @@
       from { transform: translateX(100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
+    .spinning {
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Ambient Background Canvas -->
   <canvas id="ambient-canvas"></canvas>
 
-  <!-- Sticky Top Header -->
   <header>
     <div class="container">
       <div class="header-row">
@@ -552,13 +546,13 @@
             <div class="badge-bar">
               <span class="badge badge-emerald">⚡ 1 Domain = 1 Unit</span>
               <span class="badge badge-amber">⏳ Scope: Today &amp; Yesterday</span>
-              <span class="badge badge-sky">🛡️ 4 Seeds Monitored</span>
+              <span class="badge badge-sky">🛡️ 4 Seeds Live Monitoring</span>
             </div>
           </div>
         </div>
 
         <div class="controls-group">
-          <button id="btn-lock-toggle" class="btn" title="Client Admin Protection">
+          <button id="btn-lock-toggle" class="btn" title="Admin Toggle">
             <span id="lock-icon">🔒</span>
             <span id="lock-label">Admin Locked</span>
           </button>
@@ -586,30 +580,25 @@
             <span id="timer-icon">⏸</span>
             <span id="timer-label">Pause</span>
           </button>
-
-          <button id="btn-simulate-event" class="btn" title="Generate test incoming email" style="color:var(--indigo-600); border-color:var(--indigo-200);">
-            <span>⚡ Demo Event</span>
-          </button>
         </div>
 
         <div class="controls-group">
           <button id="btn-scope-yesterday" class="btn btn-violet">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span>Yesterday</span>
+            <span id="label-yesterday-btn">Yesterday</span>
           </button>
           <button id="btn-sync-now" class="btn btn-primary">
             <svg id="sync-spinner" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
-            <span>Sync Now</span>
+            <span id="label-sync-btn">Sync Now</span>
           </button>
           <div style="font-size:0.7rem; color:var(--text-muted); margin-left:0.25rem;">
-            Polled: <strong id="header-polled-time" class="font-mono text-main">Just now</strong>
+            Polled: <strong id="header-polled-time" class="font-mono text-main">Never</strong>
           </div>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Navigation Tab Bar -->
   <div class="nav-bar">
     <div class="container">
       <div class="tab-list no-scrollbar">
@@ -617,15 +606,15 @@
           <span>Live Monitor</span>
           <span id="badge-records-total" class="badge badge-indigo">0</span>
         </button>
-        <button class="tab-btn" data-tab="bond">
+        <button class="tab-btn" data-tab="sheet1">
           <span class="tab-lock-indicator">🔒</span>
-          <span>BOND</span>
-          <span id="badge-bond-count" class="badge badge-slate">0</span>
+          <span>Sheet1 Cache</span>
+          <span id="badge-sheet1-count" class="badge badge-slate">0</span>
         </button>
-        <button class="tab-btn" data-tab="domain-types">
+        <button class="tab-btn" data-tab="reused">
           <span class="tab-lock-indicator">🔒</span>
-          <span>DOMAIN TYPES</span>
-          <span id="badge-domain-types-count" class="badge badge-slate">0</span>
+          <span>Reused Domains</span>
+          <span id="badge-reused-count" class="badge badge-slate">0</span>
         </button>
         <button class="tab-btn" data-tab="logs">
           <span class="tab-lock-indicator">🔒</span>
@@ -636,12 +625,8 @@
     </div>
   </div>
 
-  <!-- Main Body Content -->
   <main class="container" style="flex:1;">
-    
-    <!-- 5 KPI Headline Cards -->
     <section class="kpi-grid">
-      <!-- Total -->
       <div class="kpi-card">
         <div class="kpi-header">
           <span id="kpi-scope-title">Total Mails</span>
@@ -656,7 +641,6 @@
         </div>
       </div>
 
-      <!-- Inbox -->
       <div class="kpi-card" style="background:var(--emerald-50); border-color:var(--emerald-200);">
         <div class="kpi-header" style="color:var(--emerald-700);">
           <span>Inbox Placed</span>
@@ -671,7 +655,6 @@
         </div>
       </div>
 
-      <!-- Spam -->
       <div class="kpi-card" style="background:var(--rose-50); border-color:var(--rose-200);">
         <div class="kpi-header" style="color:var(--rose-700);">
           <span>Spam Landings</span>
@@ -686,7 +669,6 @@
         </div>
       </div>
 
-      <!-- Valid Mapped Domains -->
       <div class="kpi-card" style="background:var(--indigo-50); border-color:var(--indigo-200);">
         <div class="kpi-header" style="color:var(--indigo-700);">
           <span>Valid Domains</span>
@@ -701,7 +683,6 @@
         </div>
       </div>
 
-      <!-- Active Seeds -->
       <div class="kpi-card">
         <div class="kpi-header">
           <span>Active Seeds</span>
@@ -710,10 +691,10 @@
         <div class="kpi-value-row">
           <span class="kpi-value">4 / 4</span>
           <div style="display:flex; gap:0.25rem;">
-            <span style="width:8px; height:8px; border-radius:50%; background:var(--emerald-500);" title="Seed 1 (Opener)"></span>
-            <span style="width:8px; height:8px; border-radius:50%; background:var(--emerald-500);" title="Seed 2 (Opener)"></span>
-            <span style="width:8px; height:8px; border-radius:50%; background:var(--emerald-500);" title="Seed 3 (Non-Opener)"></span>
-            <span style="width:8px; height:8px; border-radius:50%; background:var(--emerald-500);" title="Seed 4 (Non-Opener)"></span>
+            <span style="width:8px; height:8px; border-radius:50%; background:var(--emerald-500);" title="heenaguptaopn (Opener)"></span>
+            <span style="width:8px; height:8px; border-radius:50%; background:var(--emerald-500);" title="mohiniagopn (Opener)"></span>
+            <span style="width:8px; height:8px; border-radius:50%; background:var(--emerald-500);" title="srishtiguptanonopn (Non-Opener)"></span>
+            <span style="width:8px; height:8px; border-radius:50%; background:var(--emerald-500);" title="jasminesandallasnonopn (Non-Opener)"></span>
           </div>
         </div>
         <div style="font-size:0.65rem; color:var(--text-muted); margin-top:0.25rem;">2 Openers · 2 Non-Openers</div>
@@ -746,10 +727,8 @@
         </div>
       </div>
 
-      <!-- 3-Column Layout -->
       <div class="dashboard-layout">
-        
-        <!-- Left: Universal ET Directory -->
+        <!-- Universal ET Directory -->
         <aside class="panel-card" style="max-height: calc(100vh - 280px); display:flex; flex-direction:column;">
           <div style="padding:0.75rem 1rem; border-bottom:1px solid var(--border-color); background:#fafafa; display:flex; align-items:center; justify-content:space-between;">
             <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">Universal ETs</div>
@@ -759,7 +738,7 @@
             <input id="sidebar-et-search" type="text" placeholder="Filter ETs..." class="input-text" style="height:1.9rem; font-size:0.7rem;">
           </div>
           <div id="sidebar-et-list" style="overflow-y:auto; flex:1; padding:0.25rem 0;">
-            <!-- Rendered list items -->
+            <div style="padding: 1.5rem; text-align: center; color: var(--text-light); font-size: 0.75rem;">Loading ET Directory...</div>
           </div>
         </aside>
 
@@ -770,7 +749,14 @@
             <button id="btn-clear-category-filter" style="background:none; border:none; color:var(--indigo-600); font-weight:700; cursor:pointer;">✕ Clear</button>
           </div>
           <div id="domain-cards-list">
-            <!-- Rendered domain cards -->
+            <div class="panel-card" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+              <svg class="spinning" style="width: 28px; height: 28px; margin: 0 auto 0.75rem; color: var(--indigo-600);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+                <path d="M12 2a10 10 0 0 1 10 10"></path>
+              </svg>
+              <p style="font-weight: 700; font-size: 0.85rem;">Checking 4 Mailboxes via Gmail API...</p>
+              <p style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem;">Authenticating tokens &amp; retrieving live delivery metrics.</p>
+            </div>
           </div>
         </section>
 
@@ -794,37 +780,34 @@
             </div>
           </div>
 
-          <div id="donut-legend-list" style="margin-top:0.75rem; display:flex; flex-direction:column; gap:0.35rem;">
-            <!-- Interactive Legend -->
-          </div>
+          <div id="donut-legend-list" style="margin-top:0.75rem; display:flex; flex-direction:column; gap:0.35rem;"></div>
         </aside>
-
       </div>
     </div>
 
-    <!-- TAB 2: BOND -->
-    <div id="tab-bond" class="tab-content" style="display:none; margin-bottom: 3rem;">
+    <!-- TAB 2: SHEET 1 CACHE -->
+    <div id="tab-sheet1" class="tab-content" style="display:none; margin-bottom: 3rem;">
       <div class="panel-card" style="padding: 1.25rem; margin-bottom: 1rem;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
           <div>
-            <h3 style="font-size:0.9rem; font-weight:700;">BOND Mapping Cache</h3>
-            <p style="font-size:0.7rem; color:var(--text-muted);">Primary source mapping <strong>DOMAINS</strong> to <strong>ET NAME</strong> and <strong>DATE</strong>.</p>
+            <h3 style="font-size:0.9rem; font-weight:700;">Sheet1 Mapping Cache</h3>
+            <p style="font-size:0.7rem; color:var(--text-muted);">Primary Google Sheet source with automatic cross-origin and CSV parsing fallbacks.</p>
           </div>
           <div style="display:flex; gap:0.5rem;">
-            <button id="btn-paste-bond" class="btn">📋 Quick Paste</button>
-            <button id="btn-fetch-bond" class="btn btn-primary">Sync URL</button>
+            <button id="btn-paste-sheet1" class="btn">📋 Quick Paste</button>
+            <button id="btn-fetch-sheet1" class="btn btn-primary">Sync URL</button>
           </div>
         </div>
-        <input id="input-bond-url" type="text" class="input-text font-mono" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vTjA8aNW5lpl6B2zqdR3CtMdVEv_hCkfkwWbyWIkZAc3tbQxgxE67g6jO5QkLftCZL_nBSPSDtHMmud/pub?gid=0&amp;single=true&amp;output=csv">
+        <input id="input-sheet1-url" type="text" class="input-text font-mono" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vTjA8aNW5lpl6B2zqdR3CtMdVEv_hCkfkwWbyWIkZAc3tbQxgxE67g6jO5QkLftCZL_nBSPSDtHMmud/pub?gid=0&amp;single=true&amp;output=csv">
         <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-top:0.5rem;">
-          <span>Status: <strong id="status-bond-text" class="text-main">Ready</strong></span>
-          <span id="time-bond-synced">Never synced</span>
+          <span>Status: <strong id="status-sheet1-text" class="text-main">Ready</strong></span>
+          <span id="time-sheet1-synced">Never synced</span>
         </div>
       </div>
 
       <div class="panel-card">
         <div style="padding:0.75rem 1rem; background:#fafafa; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:0.75rem; font-weight:700;">Cached Records (<span id="table-bond-count">0</span>)</span>
+          <span style="font-size:0.75rem; font-weight:700;">Cached Records (<span id="table-sheet1-count">0</span>)</span>
           <span class="badge badge-amber">Today &amp; Yesterday Filter Active</span>
         </div>
         <div style="max-height: 400px; overflow-y:auto;">
@@ -832,11 +815,11 @@
             <thead style="background:#f1f5f9; position:sticky; top:0; z-index:5;">
               <tr>
                 <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Domain</th>
-                <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">ET Name</th>
+                <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Universal ET</th>
                 <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Date</th>
               </tr>
             </thead>
-            <tbody id="tbody-bond">
+            <tbody id="tbody-sheet1">
               <tr><td colspan="3" style="text-align:center; padding:2rem; color:var(--text-light);">No cached data loaded.</td></tr>
             </tbody>
           </table>
@@ -844,29 +827,29 @@
       </div>
     </div>
 
-    <!-- TAB 3: DOMAIN TYPES -->
-    <div id="tab-domain-types" class="tab-content" style="display:none; margin-bottom: 3rem;">
+    <!-- TAB 3: REUSED DOMAINS -->
+    <div id="tab-reused" class="tab-content" style="display:none; margin-bottom: 3rem;">
       <div class="panel-card" style="padding: 1.25rem; margin-bottom: 1rem;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
           <div>
-            <h3 style="font-size:0.9rem; font-weight:700;">DOMAIN TYPES Cache</h3>
-            <p style="font-size:0.7rem; color:var(--text-muted);">Secondary source mapping <strong>DOMAINS</strong> to <strong>ET NAME</strong> and <strong>DATE</strong>.</p>
+            <h3 style="font-size:0.9rem; font-weight:700;">Reused Domains Secondary Cache</h3>
+            <p style="font-size:0.7rem; color:var(--text-muted);">Secondary mappings cache for reused campaigns.</p>
           </div>
           <div style="display:flex; gap:0.5rem;">
-            <button id="btn-paste-domain-types" class="btn">📋 Quick Paste</button>
-            <button id="btn-fetch-domain-types" class="btn btn-violet">Sync URL</button>
+            <button id="btn-paste-reused" class="btn">📋 Quick Paste</button>
+            <button id="btn-fetch-reused" class="btn btn-violet">Sync URL</button>
           </div>
         </div>
-        <input id="input-domain-types-url" type="text" class="input-text font-mono" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vTjA8aNW5lpl6B2zqdR3CtMdVEv_hCkfkwWbyWIkZAc3tbQxgxE67g6jO5QkLftCZL_nBSPSDtHMmud/pub?gid=1798344486&amp;single=true&amp;output=csv">
+        <input id="input-reused-url" type="text" class="input-text font-mono" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vTjA8aNW5lpl6B2zqdR3CtMdVEv_hCkfkwWbyWIkZAc3tbQxgxE67g6jO5QkLftCZL_nBSPSDtHMmud/pub?gid=1798344486&amp;single=true&amp;output=csv">
         <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); margin-top:0.5rem;">
-          <span>Status: <strong id="status-domain-types-text" class="text-main">Ready</strong></span>
-          <span id="time-domain-types-synced">Never synced</span>
+          <span>Status: <strong id="status-reused-text" class="text-main">Ready</strong></span>
+          <span id="time-reused-synced">Never synced</span>
         </div>
       </div>
 
       <div class="panel-card">
         <div style="padding:0.75rem 1rem; background:#fafafa; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:0.75rem; font-weight:700;">Cached Records (<span id="table-domain-types-count">0</span>)</span>
+          <span style="font-size:0.75rem; font-weight:700;">Cached Records (<span id="table-reused-count">0</span>)</span>
           <span class="badge badge-amber">Today &amp; Yesterday Filter Active</span>
         </div>
         <div style="max-height: 400px; overflow-y:auto;">
@@ -874,11 +857,11 @@
             <thead style="background:#f1f5f9; position:sticky; top:0; z-index:5;">
               <tr>
                 <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Domain</th>
-                <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">ET Name</th>
+                <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Universal ET</th>
                 <th style="padding:0.5rem 1rem; border-bottom:1px solid var(--border-color);">Date</th>
               </tr>
             </thead>
-            <tbody id="tbody-domain-types">
+            <tbody id="tbody-reused">
               <tr><td colspan="3" style="text-align:center; padding:2rem; color:var(--text-light);">No cached data loaded.</td></tr>
             </tbody>
           </table>
@@ -893,12 +876,9 @@
           <span style="font-size:0.75rem; font-weight:700; font-family:var(--font-mono);">Live Operations &amp; Diagnostic Terminal</span>
           <button id="btn-clear-logs" style="background:none; border:none; color:#94a3b8; font-size:0.7rem; cursor:pointer; text-decoration:underline;">Clear Logs</button>
         </div>
-        <div id="terminal-container" class="terminal-body no-scrollbar">
-          <!-- Log lines -->
-        </div>
+        <div id="terminal-container" class="terminal-body no-scrollbar"></div>
       </div>
     </div>
-
   </main>
 
   <!-- Alerts Modal -->
@@ -935,7 +915,7 @@
           </div>
           <div style="display:flex; align-items:center; gap:0.25rem;">
             <span style="font-size:0.7rem; color:var(--text-muted); font-family:var(--font-mono);">ntfy.sh/</span>
-            <input id="cfg-ntfy-topic" type="text" class="input-text font-mono" value="spam_alerts_seed_channel" style="height:1.8rem; font-size:0.7rem;">
+            <input id="cfg-ntfy-topic" type="text" class="input-text font-mono" value="ayush_spam_alerts_seed" style="height:1.8rem; font-size:0.7rem;">
           </div>
         </div>
       </div>
@@ -955,9 +935,9 @@
         <button class="btn-close-modal" style="background:none; border:none; font-size:1.1rem; cursor:pointer; color:var(--text-muted);">✕</button>
       </div>
       <p style="font-size:0.7rem; color:var(--text-muted); margin-bottom:0.5rem;">
-        Paste tabular rows with headers: <code>DOMAIN</code>, <code>ET NAME</code>, <code>DATE</code>
+        Paste tabular rows with headers: <code>Domains</code>, <code>Universal ET Name</code>, <code>Date</code>
       </p>
-      <textarea id="paste-textarea" rows="7" style="width:100%; border:1px solid var(--border-color); border-radius:0.5rem; padding:0.5rem; font-family:var(--font-mono); font-size:0.7rem; outline:none;" placeholder="domain.com,JSG 30,2026-10-14&#10;example.org,AUTOSPOT 12,2026-10-13"></textarea>
+      <textarea id="paste-textarea" rows="7" style="width:100%; border:1px solid var(--border-color); border-radius:0.5rem; padding:0.5rem; font-family:var(--font-mono); font-size:0.7rem; outline:none;" placeholder="domain.com,CAMPAIGN_A,2026-10-14&#10;example.org,CAMPAIGN_B,2026-10-13"></textarea>
       <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:0.75rem;">
         <button class="btn btn-close-modal">Cancel</button>
         <button id="btn-apply-paste" class="btn btn-primary">Parse &amp; Apply</button>
@@ -969,7 +949,7 @@
   <div id="modal-password" class="modal-overlay">
     <div class="modal-box" style="max-width:340px;">
       <h4 style="font-size:0.85rem; font-weight:700; margin-bottom:0.5rem;">Admin Lock Screen</h4>
-      <p style="font-size:0.7rem; color:var(--text-muted); margin-bottom:0.75rem;">Protected management tab. Default client demo passcode is <code>admin123</code>.</p>
+      <p style="font-size:0.7rem; color:var(--text-muted); margin-bottom:0.75rem;">Protected management tab. Passcode is <code>Ayush9793</code>.</p>
       <input id="input-password" type="password" placeholder="Enter password..." class="input-text" style="margin-bottom:0.5rem;">
       <p id="password-error" style="color:var(--rose-600); font-size:0.65rem; display:none; margin-bottom:0.5rem;">Invalid passcode.</p>
       <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
@@ -984,7 +964,7 @@
     <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:0.5rem;">
       <div>
         <div style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--rose-100);">🚨 Spam Detected</div>
-        <div id="toast-spam-et" style="font-size:0.8rem; font-weight:700; margin-top:0.15rem;">ET Name</div>
+        <div id="toast-spam-et" style="font-size:0.8rem; font-weight:700; margin-top:0.15rem;">Universal ET</div>
       </div>
       <button id="btn-close-spam-alert" style="background:none; border:none; color:#fff; font-size:1rem; cursor:pointer;">✕</button>
     </div>
@@ -994,7 +974,6 @@
     </div>
   </div>
 
-  <!-- Toast Notification -->
   <div id="toast">
     <span style="color:var(--emerald-500)">✓</span>
     <span id="toast-msg">Notification message</span>
@@ -1005,73 +984,67 @@
     (function () {
       'use strict';
 
-      // --- CONFIGURATION & SEEDS ---
-      const DEFAULT_ADMIN_PASS = 'admin123';
+      // --- PRODUCTION GOOGLE OAUTH CONFIGURATION ---
+      const OAUTH_CLIENT_ID = "993990204222-qcknpbirqoh9mp2951qfvm4vv7imk087.apps.googleusercontent.com";
+      const OAUTH_CLIENT_SECRET = "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";
+      const ADMIN_PASS = 'Ayush9793';
+
       let isAdminUnlocked = false;
       let pendingLockedTab = null;
 
+      // 4 Seed Accounts
       const SEED_ACCOUNTS = [
         { 
           id: 'acc_1', 
           name: 'heenaguptaopn', 
-          role: 'Opener',
-          token: '1//0g_m2eiIDKjCJCgYIARAAGBASNwF-L9IrUAXQchNOI3g2jEEZfT670RMYCrVuqFjBNw_Uidwk8Yp0f9TTg6l2aGe7jqdYG5uR9fo'
+          role: 'Opener', 
+          token: '1//0g_m2eiIDKjCJCgYIARAAGBASNwF-L9IrUAXQchNOI3g2jEEZfT670RMYCrVuqFjBNw_Uidwk8Yp0f9TTg6l2aGe7jqdYG5uR9fo' 
         },
         { 
           id: 'acc_2', 
           name: 'mohiniagopn', 
-          role: 'Opener',
-          token: '1//0gQB0SkGpOtfJCgYIARAAGBASNwF-L9IreXloHTzRyml1sLpOystS_R_8bH5j_hzY5FzI2Hsj2s4s0DyelBXgmfelRuj4VXN6gSo'
+          role: 'Opener', 
+          token: '1//0gQB0SkGpOtfJCgYIARAAGBASNwF-L9IreXloHTzRyml1sLpOystS_R_8bH5j_hzY5FzI2Hsj2s4s0DyelBXgmfelRuj4VXN6gSo' 
         },
         { 
           id: 'acc_3', 
           name: 'srishtiguptanonopn', 
-          role: 'Non-Opener',
-          token: '1//0g1C75vTenZJfCgYIARAAGBASNwF-L9Ir0iqeR_jQanVEMcWqYEJ4qCxNn6qeG0OHKkcSPkiagfXArxQBCamUdgaPNMpKIuYcj9o'
+          role: 'Non-Opener', 
+          token: '1//0g1C75vTenZJfCgYIARAAGBASNwF-L9Ir0iqeR_jQanVEMcWqYEJ4qCxNn6qeG0OHKkcSPkiagfXArxQBCamUdgaPNMpKIuYcj9o' 
         },
         { 
           id: 'acc_4', 
           name: 'jasminesandallasnonopn', 
-          role: 'Non-Opener',
-          token: '1//0gPzLNn9_KRgyCgYIARAAGBASNwF-L9IrsR_yLYmw-b5M9n1pNx-ss0DzZhuXHdDokqRAuL_Ulw_l0CPefxT6fuPDHEdB5RmHJtA'
+          role: 'Non-Opener', 
+          token: '1//0gPzLNn9_KRgyCgYIARAAGBASNwF-L9IrsR_yLYmw-b5M9n1pNx-ss0DzZhuXHdDokqRAuL_Ulw_l0CPefxT6fuPDHEdB5RmHJtA' 
         }
       ];
 
-      // Initial Demo Mappings
-      const initialBondData = [
-        { domain: 'apexnewsletters.com', etName: 'JSG 30', dateStr: '2026-10-14' },
-        { domain: 'primepulsemailer.net', etName: 'JSG 30', dateStr: '2026-10-14' },
-        { domain: 'cloudfrontiertech.com', etName: 'AUTOSPOT 12', dateStr: '2026-10-14' },
-        { domain: 'globalinsightsdigest.org', etName: 'FINANCE FEED', dateStr: '2026-10-13' },
-        { domain: 'dailyinboxdirect.co', etName: 'HEALTH DIGEST', dateStr: '2026-10-14' }
-      ];
+      // Cache & State
+      const tokenCache = {};
+      const messageDetailCache = new Map();
+      const sheet1Map = new Map();
+      const reusedMap = new Map();
+      let emailRecords = [];
 
-      const initialDomainTypesData = [
-        { domain: 'swiftdispatchhub.com', etName: 'REUSED PROMO', dateStr: '2026-10-14' },
-        { domain: 'marketorbitdaily.info', etName: 'FLASH 22', dateStr: '2026-10-13' }
-      ];
-
-      // State Containers
       let currentScope = 'TODAY'; // 'TODAY' or 'YESTERDAY'
       let isTimerPaused = false;
+      let isSyncInProgress = false;
       let countdown = 30;
       let countdownTimer = null;
-      let activePasteTarget = 'bond';
+      let activePasteTarget = 'sheet1';
       let selectedDonutCategory = 'ALL';
 
-      const bondMap = new Map();
-      const domainTypesMap = new Map();
-      let emailRecords = []; // Master list of monitored units
-
-      // Notifications Settings
       const alertConfig = {
         browserPush: true,
         audio: true,
         mobilePush: true,
-        ntfyTopic: 'spam_alerts_seed_channel'
+        ntfyTopic: localStorage.getItem('ayush_ntfy_topic') || 'ayush_spam_alerts_seed'
       };
 
-      // --- DOM REFS ---
+      const notifiedSpamIds = new Set(JSON.parse(localStorage.getItem('notified_spam_ids_prod') || '[]'));
+
+      // --- DOM REFERENCES ---
       const countdownSecEl = document.getElementById('countdown-sec');
       const countdownCircleEl = document.getElementById('countdown-circle');
       const countdownTextEl = document.getElementById('countdown-text');
@@ -1079,7 +1052,10 @@
       const timerIconEl = document.getElementById('timer-icon');
       const timerLabelEl = document.getElementById('timer-label');
       const btnSyncNow = document.getElementById('btn-sync-now');
+      const labelSyncBtn = document.getElementById('label-sync-btn');
+      const syncSpinner = document.getElementById('sync-spinner');
       const btnScopeYesterday = document.getElementById('btn-scope-yesterday');
+      const labelYesterdayBtn = document.getElementById('label-yesterday-btn');
       const badgeActiveScopeEl = document.getElementById('badge-active-scope');
       const kpiScopeTitleEl = document.getElementById('kpi-scope-title');
       const headerPolledTimeEl = document.getElementById('header-polled-time');
@@ -1117,7 +1093,6 @@
       const lockIconEl = document.getElementById('lock-icon');
       const lockLabelEl = document.getElementById('lock-label');
 
-      // Modals
       const modalAlerts = document.getElementById('modal-alerts');
       const modalPaste = document.getElementById('modal-paste');
       const modalPassword = document.getElementById('modal-password');
@@ -1126,7 +1101,6 @@
       const inputPassword = document.getElementById('input-password');
       const passwordError = document.getElementById('password-error');
 
-      // Diagnostics & Toasts
       const terminalContainer = document.getElementById('terminal-container');
       const toastEl = document.getElementById('toast');
       const toastMsgEl = document.getElementById('toast-msg');
@@ -1135,30 +1109,7 @@
       const toastSpamDom = document.getElementById('toast-spam-dom');
       const toastSpamAcc = document.getElementById('toast-spam-acc');
 
-      // --- AUDIO SYNTHESIZER ---
-      function triggerSirenSound() {
-        if (!alertConfig.audio) return;
-        try {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          if (!AudioContext) return;
-          const ctx = new AudioContext();
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(800, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(350, ctx.currentTime + 0.3);
-          gain.gain.setValueAtTime(0.2, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-          osc.start();
-          osc.stop(ctx.currentTime + 0.3);
-        } catch (e) {
-          // Audio autoplay policies or unsupported context
-        }
-      }
-
-      // --- LOGGING ---
+      // --- LOGGING & NOTIFICATIONS ---
       function log(msg, type = 'info') {
         const time = new Date().toLocaleTimeString();
         const row = document.createElement('div');
@@ -1183,10 +1134,70 @@
         setTimeout(() => toastEl.classList.remove('show'), 2400);
       }
 
-      // --- NORMALIZATION HELPERS ---
+      function triggerSirenSound() {
+        if (!alertConfig.audio) return;
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+          const ctx = new AudioContext();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(880, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(360, ctx.currentTime + 0.35);
+          gain.gain.setValueAtTime(0.25, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.35);
+        } catch (e) {}
+      }
+
+      function notifySpamPlacement(rec, seedName) {
+        if (notifiedSpamIds.has(rec.messageId)) return;
+        notifiedSpamIds.add(rec.messageId);
+        localStorage.setItem('notified_spam_ids_prod', JSON.stringify(Array.from(notifiedSpamIds)));
+
+        triggerSirenSound();
+        log(`[SPAM ALERT] ${rec.domain} landed in SPAM on ${seedName}! Universal ET: ${rec.etName}`, 'error');
+
+        if (alertConfig.browserPush && 'Notification' in window && Notification.permission === 'granted') {
+          try {
+            new Notification(`🚨 SPAM: ${rec.etName} (${rec.domain})`, {
+              body: `Seed: ${seedName}\nSubject: ${rec.subject}`,
+              tag: `spam_${rec.messageId}`
+            });
+          } catch (e) {}
+        }
+
+        if (alertConfig.mobilePush && alertConfig.ntfyTopic) {
+          fetch(`https://ntfy.sh/${alertConfig.ntfyTopic}`, {
+            method: 'POST',
+            body: `Domain: ${rec.domain}\nSeed: ${seedName}\nSubject: ${rec.subject}`,
+            headers: { 'Title': `🚨 SPAM: ${rec.etName}`, 'Priority': 'urgent' }
+          }).catch(() => {});
+        }
+
+        toastSpamEt.textContent = rec.etName;
+        toastSpamDom.textContent = rec.domain;
+        toastSpamAcc.textContent = seedName;
+        spamAlertToast.style.display = 'block';
+        setTimeout(() => { spamAlertToast.style.display = 'none'; }, 7000);
+      }
+
+      // --- PARSING & NORMALIZATION ---
       function normalizeDomain(dom) {
         if (!dom) return '';
         return String(dom).replace(/\s+/g, '').toLowerCase().trim();
+      }
+
+      function extractDomainFromSender(sender) {
+        if (!sender) return '';
+        const emailMatch = sender.match(/<([^>]+)>/) || sender.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+        const email = emailMatch ? emailMatch[1] : sender;
+        const parts = email.split('@');
+        return normalizeDomain(parts.length > 1 ? parts[1] : email);
       }
 
       function toUniversalET(name) {
@@ -1201,69 +1212,309 @@
         return clean ? clean.toUpperCase() : 'UNMAPPED';
       }
 
-      function resolveEt(domain) {
+      function resolveEtName(domain) {
         const d = normalizeDomain(domain);
-        if (bondMap.has(d)) return bondMap.get(d).etName;
-        if (domainTypesMap.has(d)) return domainTypesMap.get(d).etName;
+        if (sheet1Map.has(d)) return sheet1Map.get(d).etName;
+        if (reusedMap.has(d)) return reusedMap.get(d).etName;
+
+        const parts = d.split('.');
+        if (parts.length > 2) {
+          const root = parts.slice(-2).join('.');
+          if (sheet1Map.has(root)) return sheet1Map.get(root).etName;
+          if (reusedMap.has(root)) return reusedMap.get(root).etName;
+        }
         return 'Unmapped';
       }
 
-      // --- INITIALIZE DATASETS ---
-      function populateInitialMappings() {
-        initialBondData.forEach(item => {
-          bondMap.set(normalizeDomain(item.domain), { etName: toUniversalET(item.etName), dateStr: item.dateStr });
-        });
-        initialDomainTypesData.forEach(item => {
-          domainTypesMap.set(normalizeDomain(item.domain), { etName: toUniversalET(item.etName), dateStr: item.dateStr });
-        });
-        renderSheetTables();
+      function isDateTodayOrYesterday(dateStr) {
+        if (!dateStr || !dateStr.trim()) return true;
+        const clean = dateStr.trim();
+        let parsed = null;
+        if (/^\d{4}[-/.]\d{1,2}[-/.]\d{1,2}/.test(clean)) {
+          parsed = new Date(clean);
+        } else if (/^\d{1,2}[-/.]\d{1,2}[-/.]\d{4}/.test(clean)) {
+          const parts = clean.split(/[-/.]/);
+          parsed = new Date(parts[2], parseInt(parts[1], 10) - 1, parts[0]);
+        } else {
+          parsed = new Date(clean);
+        }
+        if (isNaN(parsed.getTime())) return true;
+        const now = new Date();
+        const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+        const yesterdayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 0, 0, 0, 0);
+        return parsed >= yesterdayStart && parsed <= endOfToday;
       }
 
-      function generateDemoRecords() {
-        emailRecords = [];
-        const baseDomains = [
-          ...Array.from(bondMap.keys()),
-          ...Array.from(domainTypesMap.keys()),
-          'unmappedmailer101.com',
-          'beaconmailroutes.net'
+      function parseDelimitedData(text) {
+        const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+        if (lines.length < 2) return [];
+        const result = [];
+        const delimiter = lines[0].includes('\t') ? '\t' : ',';
+        const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase());
+
+        let domIdx = headers.findIndex(h => h.includes('domain'));
+        let etIdx = headers.findIndex(h => h.includes('et') || h.includes('name'));
+        let dateIdx = headers.findIndex(h => h.includes('date'));
+
+        if (domIdx === -1) domIdx = 0;
+        if (etIdx === -1) etIdx = 1;
+
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(delimiter).map(c => c.trim().replace(/^"|"$/g, ''));
+          const dom = normalizeDomain(cols[domIdx]);
+          const rawEt = cols[etIdx] || '';
+          const dateStr = dateIdx !== -1 ? (cols[dateIdx] || '') : '';
+
+          if (dom && !dom.includes('domain') && isDateTodayOrYesterday(dateStr)) {
+            result.push({ domain: dom, etName: toUniversalET(rawEt), dateStr });
+          }
+        }
+        return result;
+      }
+
+      // --- LIVE GOOGLE OAUTH & GMAIL API ENGINE ---
+      async function getLiveAccessToken(acc) {
+        const now = Date.now();
+        if (tokenCache[acc.id] && tokenCache[acc.id].expiry > now + 60000) {
+          return tokenCache[acc.id].token;
+        }
+
+        const bodyParams = new URLSearchParams({
+          client_id: OAUTH_CLIENT_ID,
+          client_secret: OAUTH_CLIENT_SECRET,
+          refresh_token: acc.token,
+          grant_type: 'refresh_token'
+        });
+
+        const tokenEndpoints = [
+          'https://oauth2.googleapis.com/token',
+          `https://corsproxy.io/?url=${encodeURIComponent('https://oauth2.googleapis.com/token')}`
         ];
 
-        const sampleSubjects = [
-          'Important update regarding your subscription renewal',
-          'Exclusive weekly digest and industry intelligence',
-          'Your verification code for system login',
-          'Special promotional reward inside!'
-        ];
+        for (const ep of tokenEndpoints) {
+          try {
+            const resp = await fetch(ep, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: bodyParams.toString()
+            });
 
-        baseDomains.forEach((dom, index) => {
-          const et = resolveEt(dom);
-          const unit = {
-            domain: dom,
-            etName: et,
-            normalizedET: toUniversalET(et),
-            date: currentScope === 'TODAY' ? '2026-10-14' : '2026-10-13',
-            time: new Date(Date.now() - (index * 420000)),
-            subject: sampleSubjects[index % sampleSubjects.length],
-            placements: {}
-          };
+            if (resp.ok) {
+              const data = await resp.json();
+              if (data.access_token) {
+                tokenCache[acc.id] = {
+                  token: data.access_token,
+                  expiry: now + (data.expires_in || 3600) * 1000
+                };
+                return data.access_token;
+              }
+            } else {
+              const errTxt = await resp.text();
+              log(`Token refresh rejected for ${acc.name}: ${errTxt}`, 'error');
+            }
+          } catch (e) {}
+        }
 
-          // Distribute placement status across the 4 seeds
-          SEED_ACCOUNTS.forEach((acc, aIdx) => {
-            let status = 'INBOX';
-            if (index === 1 && aIdx === 2) status = 'SPAM';
-            if (index === 3 && aIdx > 1) status = 'SPAM';
-            if (index === 4) status = 'INBOX';
-            if (index === 5 && aIdx === 0) status = 'SPAM';
-            unit.placements[acc.name] = status;
+        return null;
+      }
+
+      function formatYMD(d) {
+        return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+      }
+
+      function getSearchQueryForScope(scope) {
+        const now = new Date();
+        if (scope === 'YESTERDAY') {
+          const dayBeforeYesterday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 2);
+          const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          return `after:${formatYMD(dayBeforeYesterday)} before:${formatYMD(todayStart)} (in:inbox OR in:spam OR in:trash)`;
+        } else {
+          const yesterdayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+          return `after:${formatYMD(yesterdayStart)} (in:inbox OR in:spam OR in:trash)`;
+        }
+      }
+
+      function isDateInScope(dateObj, scope) {
+        const now = new Date();
+        if (scope === 'YESTERDAY') {
+          const y = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+          return dateObj.getDate() === y.getDate() && dateObj.getMonth() === y.getMonth() && dateObj.getFullYear() === y.getFullYear();
+        } else {
+          return dateObj.getDate() === now.getDate() && dateObj.getMonth() === now.getMonth() && dateObj.getFullYear() === now.getFullYear();
+        }
+      }
+
+      async function fetchMailboxMessages(acc, scope) {
+        const token = await getLiveAccessToken(acc);
+        if (!token) {
+          log(`Failed authorization on ${acc.name}. Check token or credentials.`, 'error');
+          return [];
+        }
+
+        const query = getSearchQueryForScope(scope);
+        const listUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=80&includeSpamTrash=true&q=${encodeURIComponent(query)}`;
+
+        let summaries = [];
+        try {
+          let resp = null;
+          try {
+            resp = await fetch(listUrl, { headers: { Authorization: `Bearer ${token}` } });
+          } catch {
+            resp = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(listUrl)}`, { headers: { Authorization: `Bearer ${token}` } });
+          }
+
+          if (resp && resp.ok) {
+            const data = await resp.json();
+            summaries = data.messages || [];
+          }
+        } catch (e) {
+          log(`Query list error on ${acc.name}: ${e.message}`, 'error');
+          return [];
+        }
+
+        const retrievedRecords = [];
+        const toFetch = summaries.filter(s => !messageDetailCache.has(`${acc.id}_${s.id}`));
+
+        // Retrieve cached messages first
+        summaries.forEach(s => {
+          const cacheKey = `${acc.id}_${s.id}`;
+          if (messageDetailCache.has(cacheKey)) {
+            const cachedRec = messageDetailCache.get(cacheKey);
+            if (isDateInScope(cachedRec.time, scope)) {
+              retrievedRecords.push(cachedRec);
+            }
+          }
+        });
+
+        // Fetch details for new messages concurrently (batch size: 20)
+        const BATCH_SIZE = 20;
+        for (let i = 0; i < toFetch.length; i += BATCH_SIZE) {
+          const chunk = toFetch.slice(i, i + BATCH_SIZE);
+          const chunkDetails = await Promise.all(chunk.map(async m => {
+            const detailUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${m.id}?format=metadata&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Date`;
+            try {
+              let r = null;
+              try {
+                r = await fetch(detailUrl, { headers: { Authorization: `Bearer ${token}` } });
+              } catch {
+                r = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(detailUrl)}`, { headers: { Authorization: `Bearer ${token}` } });
+              }
+              return (r && r.ok) ? await r.json() : null;
+            } catch {
+              return null;
+            }
+          }));
+
+          chunkDetails.forEach(msg => {
+            if (!msg) return;
+            const headers = msg.payload?.headers || [];
+            const fromHdr = headers.find(h => h.name.toLowerCase() === 'from')?.value || '';
+            const domain = extractDomainFromSender(fromHdr);
+            if (!domain) return;
+
+            const labels = msg.labelIds || [];
+            const isSpam = labels.includes('SPAM');
+            const isInbox = labels.includes('INBOX');
+            const folder = isSpam ? 'SPAM' : isInbox ? 'INBOX' : (labels[0] || 'ARCHIVE');
+
+            const subj = headers.find(h => h.name.toLowerCase() === 'subject')?.value || '(No Subject)';
+            const internalDate = msg.internalDate ? parseInt(msg.internalDate, 10) : Date.now();
+            const msgDate = new Date(internalDate);
+
+            const rec = {
+              id: `${acc.id}_${msg.id}`,
+              messageId: msg.id,
+              accountName: acc.name,
+              domain: domain,
+              subject: subj,
+              folder: folder,
+              time: msgDate,
+              etName: resolveEtName(domain)
+            };
+
+            messageDetailCache.set(rec.id, rec);
+
+            if (isDateInScope(msgDate, scope)) {
+              if (folder === 'SPAM' && scope === 'TODAY') {
+                notifySpamPlacement(rec, acc.name);
+              }
+              retrievedRecords.push(rec);
+            }
+          });
+        }
+
+        return retrievedRecords;
+      }
+
+      async function executeLivePoll(scope = currentScope) {
+        if (isSyncInProgress) return;
+        isSyncInProgress = true;
+        currentScope = scope;
+
+        if (scope === 'YESTERDAY') {
+          labelYesterdayBtn.textContent = '...';
+        } else {
+          syncSpinner.classList.add('spinning');
+          labelSyncBtn.textContent = 'Syncing...';
+        }
+
+        log(`Running live synchronization on 4 seed accounts for ${scope}...`, 'info');
+
+        try {
+          const results = await Promise.all(SEED_ACCOUNTS.map(acc => fetchMailboxMessages(acc, scope)));
+          const flatList = results.flat();
+
+          // Aggregate by domain into Unique Units
+          const domainMap = new Map();
+          flatList.forEach(item => {
+            const normDom = normalizeDomain(item.domain);
+            if (!domainMap.has(normDom)) {
+              domainMap.set(normDom, {
+                domain: normDom,
+                etName: resolveEtName(normDom),
+                normalizedET: toUniversalET(resolveEtName(normDom)),
+                subject: item.subject,
+                time: item.time,
+                placements: {}
+              });
+            }
+
+            const unit = domainMap.get(normDom);
+            if (item.time > unit.time) {
+              unit.time = item.time;
+              unit.subject = item.subject;
+            }
+
+            // Assign status for this account (INBOX takes precedence if duplicate exists)
+            if (!unit.placements[item.accountName] || item.folder === 'SPAM' || (item.folder === 'INBOX' && unit.placements[item.accountName] !== 'INBOX')) {
+              unit.placements[item.accountName] = item.folder;
+            }
           });
 
-          emailRecords.push(unit);
-        });
+          // Fill default NONE for accounts that didn't receive mail
+          domainMap.forEach(unit => {
+            SEED_ACCOUNTS.forEach(acc => {
+              if (!unit.placements[acc.name]) {
+                unit.placements[acc.name] = 'NONE';
+              }
+            });
+          });
 
-        log(`Dataset generated for scope: ${currentScope}. Total units: ${emailRecords.length}`, 'info');
+          emailRecords = Array.from(domainMap.values()).sort((a, b) => b.time.getTime() - a.time.getTime());
+          headerPolledTimeEl.textContent = new Date().toLocaleTimeString();
+          log(`Poll completed. Total unique domains verified: ${emailRecords.length}`, 'success');
+        } catch (err) {
+          log(`Sync error: ${err.message}`, 'error');
+        } finally {
+          isSyncInProgress = false;
+          syncSpinner.classList.remove('spinning');
+          labelSyncBtn.textContent = 'Sync Now';
+          labelYesterdayBtn.textContent = 'Yesterday';
+          updateDashboard();
+        }
       }
 
-      // --- CALCULATIONS & AGGREGATIONS ---
+      // --- FILTERING & DASHBOARD RENDERING ---
       function getFilteredRecords() {
         const query = filterSearchInput.value.toLowerCase().trim();
         const etFilter = filterEtSelect.value;
@@ -1271,10 +1522,10 @@
 
         return emailRecords.filter(unit => {
           if (query) {
-            const matchDom = unit.domain.toLowerCase().includes(query);
-            const matchEt = unit.etName.toLowerCase().includes(query);
-            const matchSubj = unit.subject.toLowerCase().includes(query);
-            if (!matchDom && !matchEt && !matchSubj) return false;
+            const mDom = unit.domain.toLowerCase().includes(query);
+            const mEt = unit.etName.toLowerCase().includes(query);
+            const mSubj = unit.subject.toLowerCase().includes(query);
+            if (!mDom && !mEt && !mSubj) return false;
           }
 
           if (etFilter === 'MAPPED' && unit.normalizedET === 'UNMAPPED') return false;
@@ -1307,118 +1558,114 @@
         });
       }
 
-      // --- RENDER FUNCTIONS ---
       function updateDashboard() {
-        const visibleRecords = getFilteredRecords();
-        const totalUnits = emailRecords.length;
+        const visible = getFilteredRecords();
+        const total = emailRecords.length;
 
-        let inboxCleanUnits = 0;
-        let spamUnits = 0;
-        let mappedUnits = 0;
+        let cleanInbox = 0;
+        let spamCount = 0;
+        let mappedCount = 0;
 
         emailRecords.forEach(u => {
           let hasSpam = false;
-          let inboxCnt = 0;
+          let inboxes = 0;
           Object.values(u.placements).forEach(st => {
             if (st === 'SPAM') hasSpam = true;
-            if (st === 'INBOX') inboxCnt++;
+            if (st === 'INBOX') inboxes++;
           });
-          if (inboxCnt > 0 && !hasSpam) inboxCleanUnits++;
-          if (hasSpam) spamUnits++;
-          if (u.normalizedET !== 'UNMAPPED') mappedUnits++;
+          if (inboxes > 0 && !hasSpam) cleanInbox++;
+          if (hasSpam) spamCount++;
+          if (u.normalizedET !== 'UNMAPPED') mappedCount++;
         });
 
-        const inboxPct = totalUnits > 0 ? ((inboxCleanUnits / totalUnits) * 100).toFixed(0) : 0;
-        const spamPct = totalUnits > 0 ? ((spamUnits / totalUnits) * 100).toFixed(0) : 0;
+        const inPct = total > 0 ? ((cleanInbox / total) * 100).toFixed(0) : 0;
+        const spPct = total > 0 ? ((spamCount / total) * 100).toFixed(0) : 0;
 
-        kpiTotalVal.textContent = totalUnits;
-        kpiInboxVal.textContent = inboxCleanUnits;
-        kpiInboxPct.textContent = `${inboxPct}%`;
-        kpiInboxFill.style.width = `${inboxPct}%`;
+        kpiTotalVal.textContent = total;
+        kpiInboxVal.textContent = cleanInbox;
+        kpiInboxPct.textContent = `${inPct}%`;
+        kpiInboxFill.style.width = `${inPct}%`;
 
-        kpiSpamVal.textContent = spamUnits;
-        kpiSpamPct.textContent = `${spamPct}%`;
-        kpiSpamFill.style.width = `${spamPct}%`;
+        kpiSpamVal.textContent = spamCount;
+        kpiSpamPct.textContent = `${spPct}%`;
+        kpiSpamFill.style.width = `${spPct}%`;
 
-        const totalCachedDomains = new Set([...bondMap.keys(), ...domainTypesMap.keys()]).size;
-        kpiDomainsVal.textContent = totalCachedDomains;
-        kpiMappedBadge.textContent = `${mappedUnits} Mapped`;
+        const totalCached = new Set([...sheet1Map.keys(), ...reusedMap.keys()]).size;
+        kpiDomainsVal.textContent = totalCached;
+        kpiMappedBadge.textContent = `${mappedCount} Mapped`;
 
-        document.getElementById('badge-records-total').textContent = visibleRecords.length;
+        document.getElementById('badge-records-total').textContent = visible.length;
 
-        renderDomainCards(visibleRecords);
+        renderDomainCards(visible);
         renderETSidebar();
-        renderDonutChart(visibleRecords);
+        renderDonutChart(visible);
       }
 
       function renderDomainCards(records) {
         if (records.length === 0) {
           domainCardsList.innerHTML = `
             <div class="panel-card" style="padding: 2.5rem; text-align: center; color: var(--text-muted);">
-              <p style="font-weight: 700; margin-bottom: 0.25rem;">No Domain Units Match Your Filter</p>
-              <p style="font-size: 0.75rem;">Adjust search parameters, placement filters, or category selections.</p>
+              <p style="font-weight: 700; margin-bottom: 0.25rem;">No emails detected</p>
+              <p style="font-size: 0.75rem;">No emails matched the current filters across the 4 seeds.</p>
             </div>
           `;
           return;
         }
 
         domainCardsList.innerHTML = records.map(rec => {
-          let inboxCount = 0;
-          let spamCount = 0;
+          let inboxCnt = 0;
+          let spamCnt = 0;
           Object.values(rec.placements).forEach(st => {
-            if (st === 'INBOX') inboxCount++;
-            if (st === 'SPAM') spamCount++;
+            if (st === 'INBOX') inboxCnt++;
+            if (st === 'SPAM') spamCnt++;
           });
 
-          const hasSpam = spamCount > 0;
-          const is4of4 = inboxCount === 4;
+          const hasSpam = spamCnt > 0;
+          const is4of4 = inboxCnt === 4;
 
           return `
             <div class="domain-card ${hasSpam ? 'has-spam' : ''}">
               <div class="domain-card-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'grid' : 'none'">
-                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;">
-                  <div style="min-width: 0;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                      <span class="font-mono" style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">${escapeHtml(rec.domain)}</span>
+                <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:0.5rem;">
+                  <div style="min-width:0;">
+                    <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                      <span class="font-mono" style="font-size:0.85rem; font-weight:700; color:var(--text-main);">${escapeHtml(rec.domain)}</span>
                       ${is4of4 ? '<span class="badge badge-emerald">✓ 4/4 Locked</span>' : ''}
-                      ${hasSpam ? '<span class="badge badge-rose">⚠️ Spam Landing</span>' : ''}
+                      ${hasSpam ? '<span class="badge badge-rose">⚠️ Spam Placement</span>' : ''}
                     </div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.15rem;">
+                    <div style="font-size:0.7rem; color:var(--text-muted); margin-top:0.15rem;">
                       ${rec.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · 
-                      <span style="color: var(--text-main); font-weight: 600;">${escapeHtml(rec.subject)}</span>
+                      <span style="color:var(--text-main); font-weight:600;">${escapeHtml(rec.subject)}</span>
                     </div>
                   </div>
-                  <div style="display: flex; gap: 0.25rem; flex-shrink: 0;">
-                    <button class="btn" style="padding: 0.2rem 0.5rem; font-size: 0.65rem;" onclick="event.stopPropagation(); navigator.clipboard.writeText('${escapeHtml(rec.domain)}'); showToast('Copied: ${escapeHtml(rec.domain)}');">Copy</button>
-                  </div>
+                  <button class="btn" style="padding:0.2rem 0.5rem; font-size:0.65rem;" onclick="event.stopPropagation(); navigator.clipboard.writeText('${escapeHtml(rec.domain)}'); showToast('Copied: ${escapeHtml(rec.domain)}');">Copy</button>
                 </div>
 
-                <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f1f5f9; padding-top: 0.4rem; margin-top: 0.2rem;">
+                <div style="display:flex; align-items:center; justify-content:space-between; border-top:1px solid #f1f5f9; padding-top:0.4rem; margin-top:0.2rem;">
                   <div>
                     ${rec.etName !== 'Unmapped' 
                       ? `<span class="badge badge-indigo">🏷️ ${escapeHtml(rec.etName)}</span>` 
                       : '<span class="badge badge-slate">Unmapped ET</span>'}
                   </div>
-                  <div style="font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="color: ${inboxCount === 4 ? 'var(--emerald-600)' : inboxCount > 0 ? 'var(--indigo-600)' : 'var(--rose-600)'};">${inboxCount}/4 Inbox</span>
-                    ${spamCount > 0 ? `<span style="color: var(--rose-600);">(${spamCount} Spam)</span>` : ''}
-                    <span style="color: var(--text-light); font-size: 0.65rem;">▼</span>
+                  <div style="font-size:0.75rem; font-weight:700; display:flex; align-items:center; gap:0.5rem;">
+                    <span style="color:${inboxCnt === 4 ? 'var(--emerald-600)' : inboxCnt > 0 ? 'var(--indigo-600)' : 'var(--rose-600)'};">${inboxCnt}/4 Inbox</span>
+                    ${spamCnt > 0 ? `<span style="color:var(--rose-600);">(${spamCnt} Spam)</span>` : ''}
+                    <span style="color:var(--text-light); font-size:0.65rem;">▼</span>
                   </div>
                 </div>
               </div>
 
-              <!-- Collapsible Seeds Subgrid -->
-              <div class="domain-subgrid" style="display: grid;">
+              <div class="domain-subgrid" style="display:grid;">
                 ${SEED_ACCOUNTS.map(acc => {
-                  const st = rec.placements[acc.name] || 'UNKNOWN';
+                  const st = rec.placements[acc.name] || 'NONE';
                   const isInbox = st === 'INBOX';
                   const isSpam = st === 'SPAM';
                   return `
                     <div class="account-pill ${isInbox ? 'inbox' : isSpam ? 'spam' : ''}">
-                      <div style="font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(acc.name)}</div>
-                      <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 0.65rem; color: var(--text-muted);">${acc.role}</span>
-                        <span style="font-weight: 800; font-size: 0.65rem; color: ${isInbox ? 'var(--emerald-700)' : isSpam ? 'var(--rose-700)' : 'var(--text-muted)'};">${st}</span>
+                      <div style="font-weight:700; color:var(--text-main); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(acc.name)}</div>
+                      <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.65rem; color:var(--text-muted);">${acc.role}</span>
+                        <span style="font-weight:800; font-size:0.65rem; color:${isInbox ? 'var(--emerald-700)' : isSpam ? 'var(--rose-700)' : 'var(--text-muted)'};">${st}</span>
                       </div>
                     </div>
                   `;
@@ -1449,7 +1696,7 @@
 
         let html = `
           <div onclick="selectETFilter('ALL')" style="padding:0.45rem 1rem; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-size:0.75rem; font-weight:600; border-left:3px solid ${filterEtSelect.value === 'ALL' ? 'var(--indigo-600)' : 'transparent'}; background:${filterEtSelect.value === 'ALL' ? 'var(--indigo-50)' : 'transparent'};">
-            <span>🌟 All Campaigns</span>
+            <span>🌟 All Universal ETs</span>
             <span class="badge badge-slate">${emailRecords.length}</span>
           </div>
           <div onclick="selectETFilter('MAPPED')" style="padding:0.45rem 1rem; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-size:0.75rem; font-weight:600; border-left:3px solid ${filterEtSelect.value === 'MAPPED' ? 'var(--indigo-600)' : 'transparent'}; background:${filterEtSelect.value === 'MAPPED' ? 'var(--indigo-50)' : 'transparent'};">
@@ -1467,32 +1714,31 @@
           `;
         }
 
-        html += '<div style="margin:0.4rem 1rem 0.2rem; font-size:0.65rem; font-weight:700; color:var(--text-light); text-transform:uppercase;">Campaign Names</div>';
-
-        sortedETs.forEach(et => {
-          if (query && !et.toLowerCase().includes(query)) return;
-          const count = counts.get(et);
-          const isSelected = filterEtSelect.value === et;
-          html += `
-            <div onclick="selectETFilter('${escapeHtml(et)}')" style="padding:0.45rem 1rem; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-size:0.75rem; font-weight:600; border-left:3px solid ${isSelected ? 'var(--indigo-600)' : 'transparent'}; background:${isSelected ? 'var(--indigo-50)' : 'transparent'};">
-              <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(et)}</span>
-              <span class="badge badge-slate">${count}</span>
-            </div>
-          `;
-        });
+        if (sortedETs.length > 0) {
+          html += '<div style="margin:0.4rem 1rem 0.2rem; font-size:0.65rem; font-weight:700; color:var(--text-light); text-transform:uppercase;">Campaigns</div>';
+          sortedETs.forEach(et => {
+            if (query && !et.toLowerCase().includes(query)) return;
+            const cnt = counts.get(et);
+            const isSel = filterEtSelect.value === et;
+            html += `
+              <div onclick="selectETFilter('${escapeHtml(et)}')" style="padding:0.45rem 1rem; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-size:0.75rem; font-weight:600; border-left:3px solid ${isSel ? 'var(--indigo-600)' : 'transparent'}; background:${isSel ? 'var(--indigo-50)' : 'transparent'};">
+                <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(et)}</span>
+                <span class="badge badge-slate">${cnt}</span>
+              </div>
+            `;
+          });
+        }
 
         sidebarEtList.innerHTML = html;
 
-        const cur = filterEtSelect.value;
+        const currentVal = filterEtSelect.value;
         filterEtSelect.innerHTML = `
           <option value="ALL">All Universal ETs</option>
           <option value="MAPPED">Mapped Only</option>
           <option value="UNMAPPED">Unmapped Only</option>
-          <optgroup label="Campaigns">
-            ${sortedETs.map(et => `<option value="${escapeHtml(et)}">${escapeHtml(et)}</option>`).join('')}
-          </optgroup>
+          ${sortedETs.length > 0 ? `<optgroup label="Campaigns">${sortedETs.map(et => `<option value="${escapeHtml(et)}">${escapeHtml(et)}</option>`).join('')}</optgroup>` : ''}
         `;
-        filterEtSelect.value = cur;
+        filterEtSelect.value = currentVal;
       }
 
       window.selectETFilter = function(val) {
@@ -1500,25 +1746,25 @@
         updateDashboard();
       };
 
-      function renderDonutChart(visibleRecords) {
+      function renderDonutChart(visible) {
         let c4 = 0, c3 = 0, c2 = 0, c1 = 0, cSpam = 0;
 
-        visibleRecords.forEach(u => {
-          let inCnt = 0;
-          let spCnt = 0;
+        visible.forEach(u => {
+          let inboxes = 0;
+          let spams = 0;
           Object.values(u.placements).forEach(st => {
-            if (st === 'INBOX') inCnt++;
-            if (st === 'SPAM') spCnt++;
+            if (st === 'INBOX') inboxes++;
+            if (st === 'SPAM') spams++;
           });
-          if (spCnt > 0) cSpam++;
-          if (inCnt === 4) c4++;
-          else if (inCnt === 3) c3++;
-          else if (inCnt === 2) c2++;
-          else if (inCnt === 1) c1++;
+          if (spams > 0) cSpam++;
+          if (inboxes === 4) c4++;
+          else if (inboxes === 3) c3++;
+          else if (inboxes === 2) c2++;
+          else if (inboxes === 1) c1++;
         });
 
-        donutCenterNumber.textContent = visibleRecords.length;
-        donutTotalCount.textContent = `${visibleRecords.length} units`;
+        donutCenterNumber.textContent = visible.length;
+        donutTotalCount.textContent = `${visible.length} units`;
         donutScopeDesc.textContent = filterEtSelect.value === 'ALL' ? 'All Campaigns' : filterEtSelect.value;
 
         const categories = [
@@ -1564,7 +1810,7 @@
         donutSvg.innerHTML = svgHtml;
 
         donutLegendList.innerHTML = categories.map(cat => {
-          const pct = visibleRecords.length > 0 ? ((cat.count / visibleRecords.length) * 100).toFixed(0) : 0;
+          const pct = visible.length > 0 ? ((cat.count / visible.length) * 100).toFixed(0) : 0;
           const isSel = selectedDonutCategory === cat.key;
           return `
             <div 
@@ -1605,24 +1851,19 @@
         updateDashboard();
       });
 
-      // --- SHEET TABLES ---
+      // --- SHEET CACHE TABLES ---
       function renderSheetTables() {
-        const tbody1 = document.getElementById('tbody-bond');
-        const tbody2 = document.getElementById('tbody-domain-types');
-        const count1 = document.getElementById('table-bond-count');
-        const count2 = document.getElementById('table-domain-types-count');
-        const badge1 = document.getElementById('badge-bond-count');
-        const badge2 = document.getElementById('badge-domain-types-count');
+        const tbody1 = document.getElementById('tbody-sheet1');
+        const tbody2 = document.getElementById('tbody-reused');
+        document.getElementById('table-sheet1-count').textContent = sheet1Map.size;
+        document.getElementById('badge-sheet1-count').textContent = sheet1Map.size;
+        document.getElementById('table-reused-count').textContent = reusedMap.size;
+        document.getElementById('badge-reused-count').textContent = reusedMap.size;
 
-        count1.textContent = bondMap.size;
-        badge1.textContent = bondMap.size;
-        count2.textContent = domainTypesMap.size;
-        badge2.textContent = domainTypesMap.size;
-
-        if (bondMap.size === 0) {
+        if (sheet1Map.size === 0) {
           tbody1.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:2rem; color:var(--text-light);">No cached data.</td></tr>';
         } else {
-          tbody1.innerHTML = Array.from(bondMap.entries()).map(([dom, val]) => `
+          tbody1.innerHTML = Array.from(sheet1Map.entries()).map(([dom, val]) => `
             <tr style="border-bottom:1px solid #f1f5f9;">
               <td style="padding:0.4rem 1rem;" class="font-mono">${escapeHtml(dom)}</td>
               <td style="padding:0.4rem 1rem; font-weight:600; color:var(--indigo-600);">${escapeHtml(val.etName)}</td>
@@ -1631,10 +1872,10 @@
           `).join('');
         }
 
-        if (domainTypesMap.size === 0) {
+        if (reusedMap.size === 0) {
           tbody2.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:2rem; color:var(--text-light);">No cached data.</td></tr>';
         } else {
-          tbody2.innerHTML = Array.from(domainTypesMap.entries()).map(([dom, val]) => `
+          tbody2.innerHTML = Array.from(reusedMap.entries()).map(([dom, val]) => `
             <tr style="border-bottom:1px solid #f1f5f9;">
               <td style="padding:0.4rem 1rem;" class="font-mono">${escapeHtml(dom)}</td>
               <td style="padding:0.4rem 1rem; font-weight:600; color:var(--violet-600);">${escapeHtml(val.etName)}</td>
@@ -1644,93 +1885,63 @@
         }
       }
 
-      // --- CSV / TSV PARSER (LOOKING FOR 'DOMAINS'/'DOMAIN', 'ET NAME', 'DATE') ---
-      function parseDelimitedData(text) {
-        const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
-        if (lines.length === 0) return [];
-        const result = [];
-
-        // Detect delimiter (comma or tab)
-        const delimiter = lines[0].includes('\t') ? '\t' : ',';
-        const headers = lines[0].split(delimiter).map(h => h.trim().toLowerCase().replace(/^["']|["']$/g, ''));
-
-        // Target headers: DATE & ET NAME & DOMAIN
-        let domIdx = headers.findIndex(h => h === 'domain' || h === 'domains' || h.includes('domain'));
-        let etIdx = headers.findIndex(h => h === 'et name' || h === 'et_name' || h === 'universal et' || h === 'et');
-        let dateIdx = headers.findIndex(h => h === 'date' || h.includes('date'));
-
-        // Fallbacks if header naming is slightly different
-        if (domIdx === -1) domIdx = 0;
-        if (etIdx === -1) etIdx = headers.findIndex(h => h.includes('et') || h.includes('name'));
-        if (etIdx === -1) etIdx = 1;
-        if (dateIdx === -1) dateIdx = 2;
-
-        for (let i = 1; i < lines.length; i++) {
-          const cols = lines[i].split(delimiter).map(c => c.trim().replace(/^"|"$/g, ''));
-          const dom = normalizeDomain(cols[domIdx]);
-          const rawEt = cols[etIdx] || 'Unmapped';
-          const dateStr = dateIdx !== -1 && dateIdx < cols.length ? (cols[dateIdx] || '') : '';
-
-          if (dom && !dom.includes('domain')) {
-            result.push({ domain: dom, etName: toUniversalET(rawEt), dateStr });
-          }
-        }
-        return result;
-      }
-
-      // --- SYNC ENGINE ---
       async function syncUrl(targetKey) {
-        const isBond = targetKey === 'bond';
-        const inputEl = document.getElementById(isBond ? 'input-bond-url' : 'input-domain-types-url');
-        const statusEl = document.getElementById(isBond ? 'status-bond-text' : 'status-domain-types-text');
-        const timeEl = document.getElementById(isBond ? 'time-bond-synced' : 'time-domain-types-synced');
+        const isSheet1 = targetKey === 'sheet1';
+        const inputEl = document.getElementById(isSheet1 ? 'input-sheet1-url' : 'input-reused-url');
+        const statusEl = document.getElementById(isSheet1 ? 'status-sheet1-text' : 'status-reused-text');
+        const timeEl = document.getElementById(isSheet1 ? 'time-sheet1-synced' : 'time-reused-synced');
         const targetUrl = inputEl.value.trim();
 
         statusEl.textContent = 'Syncing...';
-        log(`Initiating sync for ${isBond ? 'BOND' : 'DOMAIN TYPES'}...`, 'info');
+        log(`Syncing ${isSheet1 ? 'Sheet1' : 'Reused Domains'} via CSV URL...`, 'info');
 
         try {
           let text = '';
           try {
             const resp = await fetch(targetUrl, { cache: 'no-store' });
             if (resp.ok) text = await resp.text();
-          } catch (corsErr) {
-            log(`Direct CORS fetch failed; attempting public proxy...`, 'warn');
+          } catch {
             const proxyResp = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`);
             if (proxyResp.ok) text = await proxyResp.text();
           }
 
           if (text && text.length > 20 && !text.includes('<!DOCTYPE html>')) {
             const parsed = parseDelimitedData(text);
-            const targetMap = isBond ? bondMap : domainTypesMap;
+            const targetMap = isSheet1 ? sheet1Map : reusedMap;
             targetMap.clear();
             parsed.forEach(item => targetMap.set(item.domain, { etName: item.etName, dateStr: item.dateStr }));
 
             statusEl.textContent = `Active (${parsed.length} records)`;
             timeEl.textContent = new Date().toLocaleTimeString();
             renderSheetTables();
+
+            emailRecords.forEach(rec => {
+              rec.etName = resolveEtName(rec.domain);
+              rec.normalizedET = toUniversalET(rec.etName);
+            });
+
             updateDashboard();
-            log(`Successfully synced ${parsed.length} mappings into ${isBond ? 'BOND' : 'DOMAIN TYPES'} (matching DATE & ET NAME).`, 'success');
+            log(`Synced ${parsed.length} entries for ${isSheet1 ? 'Sheet1' : 'Reused Domains'}.`, 'success');
             showToast(`Loaded ${parsed.length} mappings`);
           } else {
-            throw new Error('Retrieved payload was empty or non-CSV format. Please use Quick Paste.');
+            throw new Error('Empty or non-CSV payload.');
           }
         } catch (err) {
           statusEl.textContent = 'Sync Error';
-          log(`Failed to fetch published CSV: ${err.message}`, 'error');
-          showToast('Sync blocked by browser CORS. Use Quick Paste.');
+          log(`CSV URL fetch failed: ${err.message}. Use Quick Paste if needed.`, 'warn');
+          showToast('URL fetch error. Use Quick Paste.');
         }
       }
 
-      // --- POLLING & TIMERS ---
+      // --- TIMERS ---
       function startCountdownTimer() {
         if (countdownTimer) clearInterval(countdownTimer);
         countdownTimer = setInterval(() => {
-          if (isTimerPaused) return;
+          if (isTimerPaused || isSyncInProgress) return;
           countdown--;
           if (countdown <= 0) {
             countdown = 30;
-            performPollingCycle();
+            executeLivePoll(currentScope);
           }
           countdownSecEl.textContent = countdown;
           const offset = 88 - (88 * countdown) / 30;
@@ -1739,62 +1950,7 @@
         }, 1000);
       }
 
-      function performPollingCycle() {
-        headerPolledTimeEl.textContent = new Date().toLocaleTimeString();
-        log(`Sync poll executed across 4 seed mailboxes for ${currentScope}.`, 'info');
-        updateDashboard();
-      }
-
-      // --- SIMULATION OF SPAM ARRIVAL ---
-      function simulateSpamArrival() {
-        const domains = ['demo-warning-inbox.com', 'mail-check-pulse.net', 'velocity-campaign.org'];
-        const chosenDom = domains[Math.floor(Math.random() * domains.length)];
-        const et = 'ALERT TEST ET';
-
-        const unit = {
-          domain: chosenDom,
-          etName: et,
-          normalizedET: toUniversalET(et),
-          date: '2026-10-14',
-          time: new Date(),
-          subject: 'URGENT: Placement test triggered alert',
-          placements: {
-            heenaguptaopn: 'SPAM',
-            mohiniagopn: 'INBOX',
-            srishtiguptanonopn: 'INBOX',
-            jasminesandallasnonopn: 'INBOX'
-          }
-        };
-
-        emailRecords.unshift(unit);
-        updateDashboard();
-
-        triggerSirenSound();
-        log(`Spam placement detected for ${chosenDom} on heenaguptaopn!`, 'warn');
-
-        if (alertConfig.browserPush && 'Notification' in window && Notification.permission === 'granted') {
-          new Notification(`🚨 SPAM: ${et}`, {
-            body: `Domain: ${chosenDom}\nSeed: heenaguptaopn`,
-            tag: 'spam_detected'
-          });
-        }
-
-        if (alertConfig.mobilePush && alertConfig.ntfyTopic) {
-          fetch(`https://ntfy.sh/${alertConfig.ntfyTopic}`, {
-            method: 'POST',
-            body: `Spam placement on ${chosenDom} (${et})`,
-            headers: { 'Title': '🚨 Deliverability Alert', 'Priority': 'urgent' }
-          }).catch(() => {});
-        }
-
-        toastSpamEt.textContent = et;
-        toastSpamDom.textContent = chosenDom;
-        toastSpamAcc.textContent = 'heenaguptaopn';
-        spamAlertToast.style.display = 'block';
-        setTimeout(() => { spamAlertToast.style.display = 'none'; }, 7000);
-      }
-
-      // --- EVENT HANDLERS & NAVIGATION ---
+      // --- EVENTS ---
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const tab = btn.getAttribute('data-tab');
@@ -1825,7 +1981,6 @@
         if (activeContent) activeContent.style.display = 'block';
       }
 
-      // Admin Lock / Unlock
       btnLockToggle.addEventListener('click', () => {
         if (isAdminUnlocked) {
           isAdminUnlocked = false;
@@ -1848,7 +2003,7 @@
       inputPassword.addEventListener('keydown', e => { if (e.key === 'Enter') verifyPasscode(); });
 
       function verifyPasscode() {
-        if (inputPassword.value === DEFAULT_ADMIN_PASS) {
+        if (inputPassword.value === ADMIN_PASS) {
           isAdminUnlocked = true;
           lockIconEl.textContent = '🔓';
           lockLabelEl.textContent = 'Admin Unlocked';
@@ -1884,8 +2039,7 @@
         badgeActiveScopeEl.textContent = "📅 Today's Mail";
         badgeActiveScopeEl.className = 'badge badge-indigo';
         kpiScopeTitleEl.textContent = "Today's Mails";
-        performPollingCycle();
-        showToast('Sync completed');
+        executeLivePoll('TODAY');
       });
 
       btnScopeYesterday.addEventListener('click', () => {
@@ -1901,14 +2055,7 @@
           kpiScopeTitleEl.textContent = "Today's Mails";
           btnScopeYesterday.classList.remove('btn-primary');
         }
-        generateDemoRecords();
-        updateDashboard();
-        showToast(`Switched scope to ${currentScope}`);
-      });
-
-      document.getElementById('btn-simulate-event').addEventListener('click', simulateSpamArrival);
-      document.getElementById('btn-close-spam-alert').addEventListener('click', () => {
-        spamAlertToast.style.display = 'none';
+        executeLivePoll(currentScope);
       });
 
       filterSearchInput.addEventListener('input', updateDashboard);
@@ -1922,39 +2069,34 @@
           showToast('No records to export');
           return;
         }
-        const headers = ['Domain', 'ET Name', 'Date', 'heenaguptaopn', 'mohiniagopn', 'srishtiguptanonopn', 'jasminesandallasnonopn'];
+        const headers = ['Domain', 'Universal ET', 'Latest Time', ...SEED_ACCOUNTS.map(a => a.name)];
         const rows = visible.map(u => [
           `"${u.domain}"`,
           `"${u.etName}"`,
-          `"${u.date}"`,
-          `"${u.placements.heenaguptaopn || 'UNKNOWN'}"`,
-          `"${u.placements.mohiniagopn || 'UNKNOWN'}"`,
-          `"${u.placements.srishtiguptanonopn || 'UNKNOWN'}"`,
-          `"${u.placements.jasminesandallasnonopn || 'UNKNOWN'}"`
+          `"${u.time.toISOString()}"`,
+          ...SEED_ACCOUNTS.map(a => `"${u.placements[a.name] || 'NONE'}"`)
         ]);
 
         const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-        const encodedUri = encodeURI(csvContent);
         const link = document.createElement('a');
-        link.setAttribute('href', encodedUri);
-        link.setAttribute('download', `deliverability_export_${currentScope.toLowerCase()}.csv`);
+        link.setAttribute('href', encodeURI(csvContent));
+        link.setAttribute('download', `deliverability_${currentScope.toLowerCase()}_${Date.now()}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        log(`Exported CSV with ${visible.length} domain units.`, 'info');
+        log(`Exported CSV report with ${visible.length} records.`, 'info');
       });
 
-      // Quick Paste Modals
-      document.getElementById('btn-paste-bond').addEventListener('click', () => {
-        activePasteTarget = 'bond';
-        pasteModalTitle.textContent = 'Quick Paste: BOND';
+      document.getElementById('btn-paste-sheet1').addEventListener('click', () => {
+        activePasteTarget = 'sheet1';
+        pasteModalTitle.textContent = 'Quick Paste: Sheet1';
         pasteTextarea.value = '';
         modalPaste.classList.add('active');
       });
 
-      document.getElementById('btn-paste-domain-types').addEventListener('click', () => {
-        activePasteTarget = 'domain-types';
-        pasteModalTitle.textContent = 'Quick Paste: DOMAIN TYPES';
+      document.getElementById('btn-paste-reused').addEventListener('click', () => {
+        activePasteTarget = 'reused';
+        pasteModalTitle.textContent = 'Quick Paste: Reused Domains';
         pasteTextarea.value = '';
         modalPaste.classList.add('active');
       });
@@ -1963,21 +2105,27 @@
         const text = pasteTextarea.value.trim();
         const parsed = parseDelimitedData(text);
         if (parsed.length > 0) {
-          const targetMap = activePasteTarget === 'bond' ? bondMap : domainTypesMap;
+          const targetMap = activePasteTarget === 'sheet1' ? sheet1Map : reusedMap;
           targetMap.clear();
           parsed.forEach(p => targetMap.set(p.domain, { etName: p.etName, dateStr: p.dateStr }));
           renderSheetTables();
+
+          emailRecords.forEach(rec => {
+            rec.etName = resolveEtName(rec.domain);
+            rec.normalizedET = toUniversalET(rec.etName);
+          });
+
           updateDashboard();
           modalPaste.classList.remove('active');
           showToast(`Imported ${parsed.length} mappings`);
-          log(`Pasted and applied ${parsed.length} mappings into ${activePasteTarget.toUpperCase()} using headers DATE & ET NAME.`, 'success');
+          log(`Pasted and applied ${parsed.length} mappings into ${activePasteTarget}.`, 'success');
         } else {
           showToast('Could not find valid domain rows.');
         }
       });
 
-      document.getElementById('btn-fetch-bond').addEventListener('click', () => syncUrl('bond'));
-      document.getElementById('btn-fetch-domain-types').addEventListener('click', () => syncUrl('domain-types'));
+      document.getElementById('btn-fetch-sheet1').addEventListener('click', () => syncUrl('sheet1'));
+      document.getElementById('btn-fetch-reused').addEventListener('click', () => syncUrl('reused'));
 
       document.getElementById('btn-clear-logs').addEventListener('click', () => {
         terminalContainer.innerHTML = '';
@@ -1999,6 +2147,7 @@
         alertConfig.audio = document.getElementById('cfg-audio').checked;
         alertConfig.mobilePush = document.getElementById('cfg-mobile-push').checked;
         alertConfig.ntfyTopic = document.getElementById('cfg-ntfy-topic').value.trim();
+        localStorage.setItem('ayush_ntfy_topic', alertConfig.ntfyTopic);
 
         if (alertConfig.browserPush && 'Notification' in window && Notification.permission === 'default') {
           Notification.requestPermission();
@@ -2010,9 +2159,14 @@
 
       document.getElementById('btn-test-alert').addEventListener('click', () => {
         triggerSirenSound();
-        showToast('Playing siren sound...');
+        showToast('Testing siren chime...');
       });
 
+      document.getElementById('btn-close-spam-alert').addEventListener('click', () => {
+        spamAlertToast.style.display = 'none';
+      });
+
+      // --- CANVAS BACKGROUND ---
       function initAmbientBackground() {
         const canvas = document.getElementById('ambient-canvas');
         if (!canvas) return;
@@ -2060,13 +2214,18 @@
         render();
       }
 
+      // --- INITIALIZATION ---
       window.addEventListener('DOMContentLoaded', () => {
         initAmbientBackground();
-        populateInitialMappings();
-        generateDemoRecords();
-        updateDashboard();
         startCountdownTimer();
-        log('Monitoring engine initialized: BOND & DOMAIN TYPES loaded.', 'success');
+        log('Production Monitor initialized. Polling Google Sheets & Gmail API...', 'info');
+
+        // Initial sync of both mapping sheets, followed by a live mailbox poll
+        syncUrl('sheet1').then(() => {
+          syncUrl('reused').then(() => {
+            executeLivePoll('TODAY');
+          });
+        });
       });
 
     })();
